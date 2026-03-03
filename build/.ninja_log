@@ -1,0 +1,14 @@
+# ninja log v7
+38	278	7849921580590969	CMakeFiles/game.dir/src/render_helper.cpp.obj	71ef4c9fef424cf
+25	422	7849921580433299	CMakeFiles/game.dir/src/Level_01.cpp.obj	e810a8feae8056ed
+20	546	7849921580275989	CMakeFiles/game.dir/src/DummyLevel.cpp.obj	7cb5b0623c2ab742
+17	562	7849921580275989	CMakeFiles/game.dir/src/AudioSystem.cpp.obj	496d5c3eba2f3b41
+32	572	7849921580474660	CMakeFiles/game.dir/src/Subtitle.cpp.obj	67758e03c1e0603a
+27	603	7849921580474660	CMakeFiles/game.dir/src/Overworld.cpp.obj	373b31399fdea60e
+36	975	7849921580536924	CMakeFiles/game.dir/src/Texture_helper.cpp.obj	91b862bfc81837f
+41	1207	7849921580590969	CMakeFiles/main.dir/src/main.cpp.obj	697fbe7bdcb0e994
+23	1323	7849921580433299	CMakeFiles/game.dir/src/Game.cpp.obj	5955884c73971685
+30	1597	7849921580474660	CMakeFiles/game.dir/src/SaveLoad.cpp.obj	fe765591c332ecfa
+1598	1681	7849921596638024	game.dll	8481bbc7f5b51ad9
+1598	1681	7849921596638024	game.lib	8481bbc7f5b51ad9
+1681	1969	7849921596962188	main.exe	6b02af6834c1c224

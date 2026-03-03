@@ -1,0 +1,62 @@
+[
+{
+  "directory": "D:/SDL_RADIO_GAME/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -DBUILDING_GAME_DLL -D_CRT_SECURE_NO_WARNINGS -Dgame_EXPORTS -ID:/SDL_RADIO_GAME/include -ID:/SDL_RADIO_GAME/src -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -o CMakeFiles\\game.dir\\src\\AudioSystem.cpp.obj -c D:\\SDL_RADIO_GAME\\src\\AudioSystem.cpp",
+  "file": "D:/SDL_RADIO_GAME/src/AudioSystem.cpp",
+  "output": "D:/SDL_RADIO_GAME/build/CMakeFiles/game.dir/src/AudioSystem.cpp.obj"
+},
+{
+  "directory": "D:/SDL_RADIO_GAME/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -DBUILDING_GAME_DLL -D_CRT_SECURE_NO_WARNINGS -Dgame_EXPORTS -ID:/SDL_RADIO_GAME/include -ID:/SDL_RADIO_GAME/src -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -o CMakeFiles\\game.dir\\src\\DummyLevel.cpp.obj -c D:\\SDL_RADIO_GAME\\src\\DummyLevel.cpp",
+  "file": "D:/SDL_RADIO_GAME/src/DummyLevel.cpp",
+  "output": "D:/SDL_RADIO_GAME/build/CMakeFiles/game.dir/src/DummyLevel.cpp.obj"
+},
+{
+  "directory": "D:/SDL_RADIO_GAME/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -DBUILDING_GAME_DLL -D_CRT_SECURE_NO_WARNINGS -Dgame_EXPORTS -ID:/SDL_RADIO_GAME/include -ID:/SDL_RADIO_GAME/src -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -o CMakeFiles\\game.dir\\src\\Game.cpp.obj -c D:\\SDL_RADIO_GAME\\src\\Game.cpp",
+  "file": "D:/SDL_RADIO_GAME/src/Game.cpp",
+  "output": "D:/SDL_RADIO_GAME/build/CMakeFiles/game.dir/src/Game.cpp.obj"
+},
+{
+  "directory": "D:/SDL_RADIO_GAME/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -DBUILDING_GAME_DLL -D_CRT_SECURE_NO_WARNINGS -Dgame_EXPORTS -ID:/SDL_RADIO_GAME/include -ID:/SDL_RADIO_GAME/src -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -o CMakeFiles\\game.dir\\src\\Level_01.cpp.obj -c D:\\SDL_RADIO_GAME\\src\\Level_01.cpp",
+  "file": "D:/SDL_RADIO_GAME/src/Level_01.cpp",
+  "output": "D:/SDL_RADIO_GAME/build/CMakeFiles/game.dir/src/Level_01.cpp.obj"
+},
+{
+  "directory": "D:/SDL_RADIO_GAME/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -DBUILDING_GAME_DLL -D_CRT_SECURE_NO_WARNINGS -Dgame_EXPORTS -ID:/SDL_RADIO_GAME/include -ID:/SDL_RADIO_GAME/src -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -o CMakeFiles\\game.dir\\src\\Overworld.cpp.obj -c D:\\SDL_RADIO_GAME\\src\\Overworld.cpp",
+  "file": "D:/SDL_RADIO_GAME/src/Overworld.cpp",
+  "output": "D:/SDL_RADIO_GAME/build/CMakeFiles/game.dir/src/Overworld.cpp.obj"
+},
+{
+  "directory": "D:/SDL_RADIO_GAME/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -DBUILDING_GAME_DLL -D_CRT_SECURE_NO_WARNINGS -Dgame_EXPORTS -ID:/SDL_RADIO_GAME/include -ID:/SDL_RADIO_GAME/src -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -o CMakeFiles\\game.dir\\src\\SaveLoad.cpp.obj -c D:\\SDL_RADIO_GAME\\src\\SaveLoad.cpp",
+  "file": "D:/SDL_RADIO_GAME/src/SaveLoad.cpp",
+  "output": "D:/SDL_RADIO_GAME/build/CMakeFiles/game.dir/src/SaveLoad.cpp.obj"
+},
+{
+  "directory": "D:/SDL_RADIO_GAME/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -DBUILDING_GAME_DLL -D_CRT_SECURE_NO_WARNINGS -Dgame_EXPORTS -ID:/SDL_RADIO_GAME/include -ID:/SDL_RADIO_GAME/src -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -o CMakeFiles\\game.dir\\src\\Subtitle.cpp.obj -c D:\\SDL_RADIO_GAME\\src\\Subtitle.cpp",
+  "file": "D:/SDL_RADIO_GAME/src/Subtitle.cpp",
+  "output": "D:/SDL_RADIO_GAME/build/CMakeFiles/game.dir/src/Subtitle.cpp.obj"
+},
+{
+  "directory": "D:/SDL_RADIO_GAME/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -DBUILDING_GAME_DLL -D_CRT_SECURE_NO_WARNINGS -Dgame_EXPORTS -ID:/SDL_RADIO_GAME/include -ID:/SDL_RADIO_GAME/src -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -o CMakeFiles\\game.dir\\src\\Texture_helper.cpp.obj -c D:\\SDL_RADIO_GAME\\src\\Texture_helper.cpp",
+  "file": "D:/SDL_RADIO_GAME/src/Texture_helper.cpp",
+  "output": "D:/SDL_RADIO_GAME/build/CMakeFiles/game.dir/src/Texture_helper.cpp.obj"
+},
+{
+  "directory": "D:/SDL_RADIO_GAME/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -DBUILDING_GAME_DLL -D_CRT_SECURE_NO_WARNINGS -Dgame_EXPORTS -ID:/SDL_RADIO_GAME/include -ID:/SDL_RADIO_GAME/src -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -o CMakeFiles\\game.dir\\src\\render_helper.cpp.obj -c D:\\SDL_RADIO_GAME\\src\\render_helper.cpp",
+  "file": "D:/SDL_RADIO_GAME/src/render_helper.cpp",
+  "output": "D:/SDL_RADIO_GAME/build/CMakeFiles/game.dir/src/render_helper.cpp.obj"
+},
+{
+  "directory": "D:/SDL_RADIO_GAME/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -D_CRT_SECURE_NO_WARNINGS -ID:/SDL_RADIO_GAME/include -ID:/SDL_RADIO_GAME/src -O0 -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview -o CMakeFiles\\main.dir\\src\\main.cpp.obj -c D:\\SDL_RADIO_GAME\\src\\main.cpp",
+  "file": "D:/SDL_RADIO_GAME/src/main.cpp",
+  "output": "D:/SDL_RADIO_GAME/build/CMakeFiles/main.dir/src/main.cpp.obj"
+}
+]
