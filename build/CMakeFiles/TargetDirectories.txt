@@ -1,5 +1,0 @@
-D:/SDL_RADIO_GAME/build/CMakeFiles/game.dir
-D:/SDL_RADIO_GAME/build/CMakeFiles/main.dir
-D:/SDL_RADIO_GAME/build/CMakeFiles/reload.dir
-D:/SDL_RADIO_GAME/build/CMakeFiles/edit_cache.dir
-D:/SDL_RADIO_GAME/build/CMakeFiles/rebuild_cache.dir
