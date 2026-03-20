@@ -2,9 +2,14 @@
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_timer.h"
 #include "game.h"
+#include "common.h"
+#include "arena.h"
+#include <cstdio>
+
 
 SDL_Window* window;
 SDL_Renderer* renderer;
+Memory::Arena memory;
 
 Uint64 NOW;
 Uint64 PREV;
@@ -26,10 +31,20 @@ int main() {
     SDL_Init(SDL_INIT_EVENTS);
     bool running = true;
 
+    void* blob = malloc(GAME_MEMORY_ALLOWANCE);
+    if(blob == nullptr){
+        printf("fatal error: could not allocate memory");
+        return 1;
+    }
+    
+    printf("memory succesfully allocated");
+
+    Memory::Initialize(&memory, blob, GAME_MEMORY_ALLOWANCE);
+
     window = SDL_CreateWindow("pilot", 650, 400, 0);
     renderer = SDL_CreateRenderer(window, NULL);
 
-    Core::Initialize();
+    //Core::Initialize();
     
     while(running){
 
@@ -45,11 +60,11 @@ int main() {
             running = HandleRunning(event);
         }
 
-        Core::Update(dt);
-        Core::Draw(renderer);
+        //Core::Update(dt);
+        //Core::Draw(renderer);
     }
 
-    Core::OnQuit(renderer);
+    //Core::OnQuit(renderer);
     SDL_Quit();
     return 0;
     
