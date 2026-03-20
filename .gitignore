@@ -1,6 +1,7 @@
-build/
-release/
+
+/release
 
 *.ps1
 
 *.cache
+/build
