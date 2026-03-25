@@ -12,20 +12,20 @@ set(EXE_EXCLUSIVE
 )
 
 # Create the file references
-file(GLOB_RECURSE DLL_A_FILES "${CMAKE_SOURCE_DIR}/lib/*.dll.a")
+file(GLOB_RECURSE LIB_FILES "${CMAKE_SOURCE_DIR}/lib/*.lib")
 file(GLOB_RECURSE DLL_FILES "${CMAKE_SOURCE_DIR}/lib/*.dll")
-file(GLOB_RECURSE DLL_STUFF "src/*.cpp")
-list(REMOVE_ITEM DLL_STUFF ${EXE_EXCLUSIVE})
+file(GLOB_RECURSE DLL_EXCLUSIVE "src/*.cpp")
+list(REMOVE_ITEM DLL_EXCLUSIVE ${EXE_EXCLUSIVE})
 
 # EXE
 add_executable(${PROJECT_NAME} ${EXE_EXCLUSIVE})
 target_include_directories(${PROJECT_NAME} PRIVATE include)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${DLL_A_FILES})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LIB_FILES})
 
 # GAME DLL
-add_library(${DLL_NAME} SHARED ${DLL_STUFF})
+add_library(${DLL_NAME} SHARED ${DLL_EXCLUSIVE})
 target_include_directories(${DLL_NAME} PRIVATE include)
-target_link_libraries(${DLL_NAME} PRIVATE ${DLL_A_FILES})
+target_link_libraries(${DLL_NAME} PRIVATE ${LIB_FILES})
 
 # Copy DLLs
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
