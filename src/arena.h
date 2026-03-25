@@ -1,12 +1,11 @@
-#include <cstddef>
-using namespace std;
+#pragma once
 
 namespace Memory {
   
   struct Arena {
-      unsigned char* start;
+      unsigned char* base;
       size_t size;
-      size_t offset;  
+      size_t used;  
   };
 
   void Initialize(Arena* arena, void* memory, size_t size);

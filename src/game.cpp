@@ -1,58 +1,60 @@
 #include "game.h"
-#include "SDL3/SDL_keyboard.h"
-#include "SDL3/SDL_render.h"
 
-float xPos;
-float yPos;
-constexpr float SPEED = 100.0f;
-SDL_FRect box;
+extern "C" {
 
-void Core::Initialize(){
-  xPos = 100;
-  yPos = 100;
-  box.h = 50;
-  box.w = 50;
-  box.x = xPos;
-  box.y = yPos;
-}
+  void Initialize(GameData* data){
+    data->rect.x = 100;
+    data->rect.y = 100;
+    data->rect.h = 50;
+    data->rect.w = 50;
+    data->move_speed = 100;
+  }
+
+  bool HandleEvents(GameData *data, SDL_Event event){
+    if(event.type != SDL_EVENT_KEY_DOWN){
+        return true;
+    }
+    if(event.key.key == SDLK_ESCAPE){
+        return false;
+    }
+
+   return true;
+  }
   
-void Core::Update(float dt){
+  void Update(GameData* data,float dt){
 
-  const bool* keys = SDL_GetKeyboardState(NULL);
+    const bool* keys = SDL_GetKeyboardState(NULL);
 
-  if(keys[SDL_SCANCODE_RIGHT]){
-    xPos += SPEED * dt;
+    if(keys[SDL_SCANCODE_RIGHT]){
+      data->rect.x += data->move_speed * dt;
+    }
+   
+    if(keys[SDL_SCANCODE_LEFT]){
+      data->rect.x -= data->move_speed * dt;
+    }
+
+    if(keys[SDL_SCANCODE_UP]){
+        data->rect.y -= data->move_speed * dt;
+    }
+
+    if(keys[SDL_SCANCODE_DOWN]){
+      data->rect.y += data->move_speed * dt;
+    }
+  }
+
+  void Draw(GameData* data, SDL_Renderer* renderer){
+    SDL_SetRenderDrawColor(renderer, 0, 70, 8, 255);
+    SDL_RenderClear(renderer);
+
+    SDL_SetRenderDrawColor(renderer, 150, 0, 100, 255);
+    SDL_RenderFillRect(renderer,&data->rect);
+
+    SDL_RenderPresent(renderer);
+  }
+
+  void OnQuit(SDL_Renderer* renderer){
+    SDL_DestroyRenderer(renderer);
   }
    
-  if(keys[SDL_SCANCODE_LEFT]){
-    xPos -= SPEED * dt;
-  }
 
-  if(keys[SDL_SCANCODE_UP]){
-      yPos -= SPEED * dt;
-  }
-
-  if(keys[SDL_SCANCODE_DOWN]){
-    yPos += SPEED * dt;
-  }
-
-  box.x = xPos;
-  box.y = yPos;
-    
 }
-
-void Core::Draw(SDL_Renderer* renderer){
-  SDL_SetRenderDrawColor(renderer, 0, 70, 0, 255);
-  SDL_RenderClear(renderer);
-
-  SDL_SetRenderDrawColor(renderer, 150, 0, 30, 255);
-  SDL_RenderFillRect(renderer,&box);
-
-  SDL_RenderPresent(renderer);
-}
-
-void Core::OnQuit(SDL_Renderer* renderer){
-  SDL_DestroyRenderer(renderer);
-}
-   
-
