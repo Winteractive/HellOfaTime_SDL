@@ -1,9 +1,12 @@
 
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.26)
 project(Heartburner LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(DLL_NAME ${PROJECT_NAME}_game)
+set(DIR_ASSETS_ORIGIN ${CMAKE_SOURCE_DIR}/assets)
+set(DIR_ASSETS_DESTINATION $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets)
+set(WINDOWS_LIBRARIES winmm)
 
 # Flag .EXE specific files
 set(EXE_EXCLUSIVE
@@ -20,7 +23,7 @@ list(REMOVE_ITEM DLL_EXCLUSIVE ${EXE_EXCLUSIVE})
 # EXE
 add_executable(${PROJECT_NAME} ${EXE_EXCLUSIVE})
 target_include_directories(${PROJECT_NAME} PRIVATE include)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${LIB_FILES})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${LIB_FILES} ${WINDOWS_LIBRARIES})
 
 # GAME DLL
 add_library(${DLL_NAME} SHARED ${DLL_EXCLUSIVE})
@@ -32,4 +35,9 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${DLL_FILES}
         "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+)
+
+# Copy assets folder
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different ${DIR_ASSETS_ORIGIN} ${DIR_ASSETS_DESTINATION} VERBATIM
 )
