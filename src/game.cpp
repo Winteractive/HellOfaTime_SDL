@@ -1,4 +1,8 @@
 #include "game.h"
+#include "SDL3/SDL_render.h"
+#include "gameState.h"
+#include "rendering.h"
+#include <cmath>
 
 extern "C" {
 
@@ -7,6 +11,7 @@ extern "C" {
     data->rect.y = 100;
     data->rect.h = 50;
     data->rect.w = 50;
+    data->angle = 0;
     data->move_speed = 100;
   }
 
@@ -40,15 +45,20 @@ extern "C" {
     if(keys[SDL_SCANCODE_DOWN]){
       data->rect.y += data->move_speed * dt;
     }
+
+
+      data->angle += 15 * dt;
+      float radius = 100;
+      data->rect.x = 300 + cosf(data->angle) * radius;
+      data->rect.y = 200 + sinf(data->angle) * radius;
+    
   }
+
 
   void Draw(GameData* data, SDL_Renderer* renderer){
     SDL_SetRenderDrawColor(renderer, 0, 70, 8, 255);
     SDL_RenderClear(renderer);
-
-    SDL_SetRenderDrawColor(renderer, 150, 0, 100, 255);
-    SDL_RenderFillRect(renderer,&data->rect);
-
+    RenderSprite(data->fallback, renderer, 50, 50);
     SDL_RenderPresent(renderer);
   }
 

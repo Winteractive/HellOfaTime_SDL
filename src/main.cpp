@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <windows.h>
 #include <fileapi.h>
 #include <cstdio>
@@ -9,6 +10,7 @@
 #include "common.h"
 #include "arena.h"
 #include "gameState.h"
+#include "image.h"
 
 SDL_Window* window;
 SDL_Renderer* renderer;
@@ -128,16 +130,18 @@ int main() {
     if(game_memory == nullptr){
         return 1;
     }
-
     
     Memory::Arena* arena_main = new Memory::Arena();    
     Memory::Initialize(arena_main, game_memory, GAME_MEMORY_ALLOWANCE);
     GameData* gameData =  (GameData*)Memory::Allocate(arena_main, sizeof(GameData));
 
+    size_t IMAGE_ARENA_SIZE = sizeof(Image) * 1024;
     Memory::Arena* arena_image = (Memory::Arena*)Memory::Allocate(arena_main, sizeof(Memory::Arena));
-    void* image_memory_start  = Memory::Allocate(arena_main, GAME_MEMORY_IMAGES);
-    Memory::Initialize(arena_image, image_memory_start, GAME_MEMORY_IMAGES);
+    void* image_memory_start  = Memory::Allocate(arena_main, IMAGE_ARENA_SIZE);
+    Memory::Initialize(arena_image, image_memory_start, IMAGE_ARENA_SIZE);
     
+
+
     DLL_INFO dll;
     bool dll_successfully_loaded = LoadDLL(&dll);
 
@@ -145,8 +149,10 @@ int main() {
         return 2;
     }    
 
-    SDL_Setup();    
     dll.initialize(gameData);
+    SDL_Setup();    
+
+    gameData->fallback = AssetManagement::LoadSprite(arena_image, renderer, "fallback.png");
 
     MMRESULT result = timeBeginPeriod(1);
     if(result == TIMERR_NOCANDO){
