@@ -125,6 +125,13 @@ void DLL_CheckStatus(DLL_INFO* dll){
     }
 }
 
+void CalculateRemainingFrameTime_MS(double* milliseconds){
+        Uint64 frame_end_time_ns = SDL_GetTicksNS();
+        double frame_time_spent_ns = frame_end_time_ns - PREV;
+        double frame_time_spent_ms = frame_time_spent_ns / 1e6;
+        *milliseconds = FRAME_TIME_MS - frame_time_spent_ms;
+}
+
 int main() {
     void* game_memory = AllocateGameMemory();
     if(game_memory == nullptr){
@@ -140,8 +147,6 @@ int main() {
     void* image_memory_start  = Memory::Allocate(arena_main, IMAGE_ARENA_SIZE);
     Memory::Initialize(arena_image, image_memory_start, IMAGE_ARENA_SIZE);
     
-
-
     DLL_INFO dll;
     bool dll_successfully_loaded = LoadDLL(&dll);
 
@@ -180,11 +185,16 @@ int main() {
         dll.update(gameData, dt);
         dll.draw(gameData, renderer);
 
-        Uint64 frame_end_time_ns = SDL_GetTicksNS();
-        double frame_time_spent = (frame_end_time_ns - PREV) / 1e6;
+        double time_to_sleep_ms;
+        CalculateRemainingFrameTime_MS(&time_to_sleep_ms);
 
-        if(frame_time_spent < FRAME_TIME_MS){
-            SDL_Delay(FRAME_TIME_MS - frame_time_spent);
+        if(time_to_sleep_ms > 0){
+            if(time_to_sleep_ms > 1){
+                SDL_Delay(time_to_sleep_ms - 1);
+            }
+            while (time_to_sleep_ms > 0) {
+                CalculateRemainingFrameTime_MS(&time_to_sleep_ms);        
+            }
         }
         else{
             printf("missed frame \n");
