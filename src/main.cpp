@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <fileapi.h>
 #include <cstdio>
+#include <fstream>
 #include "SDL3/SDL_init.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_stdinc.h"
@@ -126,10 +127,20 @@ void DLL_CheckStatus(DLL_INFO* dll){
 }
 
 void CalculateRemainingFrameTime_MS(double* milliseconds){
-        Uint64 frame_end_time_ns = SDL_GetTicksNS();
-        double frame_time_spent_ns = frame_end_time_ns - PREV;
-        double frame_time_spent_ms = frame_time_spent_ns / 1e6;
-        *milliseconds = FRAME_TIME_MS - frame_time_spent_ms;
+    Uint64 frame_end_time_ns = SDL_GetTicksNS();
+    double frame_time_spent_ns = frame_end_time_ns - PREV;
+    double frame_time_spent_ms = frame_time_spent_ns / 1e6;
+    *milliseconds = FRAME_TIME_MS - frame_time_spent_ms;
+}
+
+void StoreGameState(Memory::Arena* arena){
+    std::ofstream file("temp_state.bin", std::ios::binary);
+    file.write(reinterpret_cast<const char*>(arena->base), arena->size);
+}
+
+void RetrieveGameState(Memory::Arena* arena){
+    std::ifstream file("temp_state.bin", std::ios::binary);
+    file.read(reinterpret_cast<char*>(arena->base), arena->size);
 }
 
 int main() {
@@ -179,6 +190,15 @@ int main() {
             running = dll.handleEvents(gameData, event);
             if(running == false){
                 break;
+            }
+
+            if(event.type == SDL_EVENT_KEY_DOWN){
+                if(event.key.key == SDLK_F9){
+                    StoreGameState(arena_main);
+                }
+                if(event.key.key == SDLK_F10){
+                    RetrieveGameState(arena_main);
+                }
             }
         }
 

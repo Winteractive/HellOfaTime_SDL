@@ -2,7 +2,6 @@
 #include "SDL3/SDL_render.h"
 #include "gameState.h"
 #include "rendering.h"
-#include <cmath>
 
 extern "C" {
 
@@ -47,10 +46,10 @@ extern "C" {
     }
 
 
-      data->angle += 15 * dt;
-      float radius = 100;
-      data->rect.x = 300 + cosf(data->angle) * radius;
-      data->rect.y = 200 + sinf(data->angle) * radius;
+      // data->angle += 15 * dt;
+      // float radius = 100;
+      // data->rect.x = 300 + cosf(data->angle) * radius;
+      // data->rect.y = 200 + sinf(data->angle) * radius;
     
   }
 
@@ -58,7 +57,7 @@ extern "C" {
   void Draw(GameData* data, SDL_Renderer* renderer){
     SDL_SetRenderDrawColor(renderer, 0, 70, 8, 255);
     SDL_RenderClear(renderer);
-    RenderSprite(data->fallback, renderer, 50, 50);
+    RenderSprite(data->fallback, renderer, data->rect.x, data->rect.y);
     SDL_RenderPresent(renderer);
   }
 
