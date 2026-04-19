@@ -14,6 +14,7 @@ set(EXE_EXCLUSIVE
     ${CMAKE_SOURCE_DIR}/src/main.cpp
 )
 
+# Flag files that both our .EXE and .DLL need to know about 
 set(SHARED_SOURCES 
     ${CMAKE_SOURCE_DIR}/src/image.cpp
     ${CMAKE_SOURCE_DIR}/src/arena.cpp
@@ -28,7 +29,7 @@ list(REMOVE_ITEM DLL_EXCLUSIVE
     ${SHARED_SOURCES}
 )
 
-# STATIC DLL
+# SHARED STATIC DLL
 add_library(${SHARED_LIB_NAME} STATIC ${SHARED_SOURCES})
 target_include_directories(${SHARED_LIB_NAME} PRIVATE include)
 
