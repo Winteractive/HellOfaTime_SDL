@@ -1,0 +1,52 @@
+{ "compressionlevel":-1,
+ "height":5,
+ "infinite":false,
+ "layers":[
+        {
+         "data":[2, 2, 2, 2, 2,
+            2, 2, 1, 1, 2,
+            2, 1, 1, 1, 2,
+            2, 1, 1, 2, 2,
+            2, 2, 2, 2, 2],
+         "height":5,
+         "id":1,
+         "name":"level",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":5,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "data":[0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 3, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0],
+         "height":5,
+         "id":2,
+         "name":"entities",
+         "opacity":1,
+         "type":"tilelayer",
+         "visible":true,
+         "width":5,
+         "x":0,
+         "y":0
+        }],
+ "nextlayerid":3,
+ "nextobjectid":1,
+ "orientation":"orthogonal",
+ "renderorder":"right-down",
+ "tiledversion":"1.12.1",
+ "tileheight":32,
+ "tilesets":[
+        {
+         "firstgid":1,
+         "source":"Sokoban_basic_tileset.tsx"
+        }],
+ "tilewidth":32,
+ "type":"map",
+ "version":"1.10",
+ "width":5
+}

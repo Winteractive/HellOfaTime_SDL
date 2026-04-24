@@ -1,11 +1,18 @@
 #pragma once
-#include "SDL3/SDL_rect.h"
+#include "arena.h"
 #include "image.h"
+#include "levels.h"
 
-  struct GameData {
-  SDL_FRect rect;
-  float move_speed;
+struct GameData {
   Image* fallback;
-  float angle;
-};
+  Image* wall;
+  Image* ground;
+  Image* player;
+  Memory::Arena* arena_levels;
+  Memory::Arena* arena_entities;
+  Memory::Arena* arena_images;
+  LevelData* levels;
+  int levelCount;
+  int currentLevel;
 
+};

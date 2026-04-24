@@ -22,7 +22,7 @@ Uint64 PREV;
 constexpr const char* NAME_OF_DLL = "Heartburner_game.dll";
 constexpr const char* NAME_OF_TEMP_DLL = "Heartburner_temp.dll";
 
-typedef void (*Function_Initialize) (GameData* data);
+typedef void (*Function_Initialize) (GameData* data, SDL_Renderer* renderer);
 typedef bool (*Function_HandleEvents) (GameData* data, SDL_Event event);
 typedef void (*Function_Update) (GameData* data, float dt);
 typedef void (*Function_Draw) (GameData* data, SDL_Renderer* renderer);
@@ -54,7 +54,7 @@ FILETIME GetTimestamp(){
 }
 
 bool LoadDLL(DLL_INFO* info, int depth = 0){
-    printf("loading dll");
+    printf("loading dll \n");
     if(depth > 20){
         printf("failed to write temp DLL");
         return false;
@@ -97,7 +97,7 @@ void* AllocateGameMemory(){
         return nullptr;
     }
 
-    printf("memory succesfully allocated");
+    printf("memory succesfully allocated \n");
     return blob;
 }
 
@@ -106,7 +106,6 @@ void SDL_Setup(){
     SDL_SetLogPriorities(SDL_LOG_PRIORITY_VERBOSE);
 
     window = SDL_CreateWindow("pilot", 650, 400, 0);
-    
     renderer = SDL_CreateRenderer(window, NULL);
 }
 
@@ -148,16 +147,24 @@ int main() {
     if(game_memory == nullptr){
         return 1;
     }
+
+    SDL_Setup();    
     
     Memory::Arena* arena_main = new Memory::Arena();    
     Memory::Initialize(arena_main, game_memory, GAME_MEMORY_ALLOWANCE);
     GameData* gameData =  (GameData*)Memory::Allocate(arena_main, sizeof(GameData));
 
     size_t IMAGE_ARENA_SIZE = sizeof(Image) * 1024;
-    Memory::Arena* arena_image = (Memory::Arena*)Memory::Allocate(arena_main, sizeof(Memory::Arena));
-    void* image_memory_start  = Memory::Allocate(arena_main, IMAGE_ARENA_SIZE);
-    Memory::Initialize(arena_image, image_memory_start, IMAGE_ARENA_SIZE);
-    
+    gameData->arena_images = Memory::CreateSubArena(arena_main, IMAGE_ARENA_SIZE);
+
+    size_t LEVEL_ARENA_SIZE = 1024 * 1024*3;
+    gameData->arena_levels = Memory::CreateSubArena(arena_main, LEVEL_ARENA_SIZE);
+
+    gameData->arena_entities = Memory::CreateSubArena(gameData->arena_levels, 1024*1024*1);
+ 
+    gameData->levelCount = 5;
+    gameData->levels = (LevelData*)Memory::Allocate(gameData->arena_levels, sizeof(LevelData) * gameData->levelCount);
+
     DLL_INFO dll;
     bool dll_successfully_loaded = LoadDLL(&dll);
 
@@ -165,11 +172,10 @@ int main() {
         return 2;
     }    
 
-    dll.initialize(gameData);
-    SDL_Setup();    
+    dll.initialize(gameData, renderer);
 
-    gameData->fallback = AssetManagement::LoadSprite(arena_image, renderer, "fallback.png");
-
+    gameData->fallback = AssetManagement::LoadSprite(gameData->arena_images, renderer, "fallback.png");
+  
     MMRESULT result = timeBeginPeriod(1);
     if(result == TIMERR_NOCANDO){
         printf("could not increase timer resolution");
