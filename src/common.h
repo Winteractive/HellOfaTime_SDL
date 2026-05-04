@@ -13,3 +13,5 @@ const double FRAME_TIME_MS = 1000.0 / FPS;
 
 const int SCREEN_WIDTH = 650;
 const int SCREEN_HEIGHT = 400;
+const int UPSCALE_FACTOR = 2;
+const int CELL_SIZE_PX = 32 * UPSCALE_FACTOR;

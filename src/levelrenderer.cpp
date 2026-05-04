@@ -6,14 +6,14 @@
 
 void RenderLevel(LevelData lvl, GameData* gameData, SDL_Renderer* renderer){
 
-  int board_width =  lvl.w * 32 / 2;
-  int board_height = lvl.h * 32 / 2;
+  int board_width =  lvl.w * CELL_SIZE_PX / 2;
+  int board_height = lvl.h * CELL_SIZE_PX / 2;
 
   for(int x = 0; x < lvl.w; x++){
     for (int y = 0 ; y < lvl.h; y++) {
       uint8_t cellType = lvl.GetCellID(x, y);
-      float xPos = x * 32;
-      float yPos = y * 32;
+      float xPos = x * CELL_SIZE_PX;
+      float yPos = y * CELL_SIZE_PX;
     
       Image* sprite;
       switch(cellType){
@@ -34,7 +34,7 @@ void RenderLevel(LevelData lvl, GameData* gameData, SDL_Renderer* renderer){
       xPos -= board_width;
       yPos -= board_height;
       
-      RenderSprite(sprite, renderer, xPos, yPos);
+      RenderSprite(sprite, renderer, xPos, yPos, UPSCALE_FACTOR);
     }
   }
 }

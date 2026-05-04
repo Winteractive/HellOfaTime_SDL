@@ -154,13 +154,13 @@ int main() {
     Memory::Initialize(arena_main, game_memory, GAME_MEMORY_ALLOWANCE);
     GameData* gameData =  (GameData*)Memory::Allocate(arena_main, sizeof(GameData));
 
-    size_t IMAGE_ARENA_SIZE = sizeof(Image) * 1024;
+    size_t IMAGE_ARENA_SIZE = sizeof(Image) * 100;
     gameData->arena_images = Memory::CreateSubArena(arena_main, IMAGE_ARENA_SIZE);
 
-    size_t LEVEL_ARENA_SIZE = 1024 * 1024*3;
+    size_t LEVEL_ARENA_SIZE = MEGABYTES(3);
     gameData->arena_levels = Memory::CreateSubArena(arena_main, LEVEL_ARENA_SIZE);
 
-    gameData->arena_entities = Memory::CreateSubArena(gameData->arena_levels, 1024*1024*1);
+    gameData->arena_entities = Memory::CreateSubArena(gameData->arena_levels, MEGABYTES(1));
  
     gameData->levelCount = 5;
     gameData->levels = (LevelData*)Memory::Allocate(gameData->arena_levels, sizeof(LevelData) * gameData->levelCount);

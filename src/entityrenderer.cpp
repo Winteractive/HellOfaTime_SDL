@@ -23,12 +23,12 @@ void RenderEntities(GameData* data, SDL_Renderer* renderer){
     xPos += SCREEN_WIDTH  / 2;
     yPos += SCREEN_HEIGHT / 2;
     
-    xPos -= data->levels[data->currentLevel].w * 32 / 2;
-    yPos -= data->levels[data->currentLevel].h * 32 / 2;
+    xPos -= data->levels[data->currentLevel].w * CELL_SIZE_PX / 2;
+    yPos -= data->levels[data->currentLevel].h * CELL_SIZE_PX / 2;
 
-    xPos += entity.x * 32;
-    yPos += entity.y * 32;
+    xPos += entity.x * CELL_SIZE_PX;
+    yPos += entity.y * CELL_SIZE_PX;
     
-    RenderSprite(img, renderer, xPos, yPos);
+    RenderSprite(img, renderer, xPos, yPos, UPSCALE_FACTOR);
   }        
 }
