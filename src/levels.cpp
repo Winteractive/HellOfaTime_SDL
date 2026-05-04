@@ -14,12 +14,12 @@ const int ENTITIES_INDEX = 1;
 void CreateLevel(Arena* arena, LevelData* level, const char* level_name){
   fstream stream(level_name);
   auto jsonResult = nlohmann::json::parse(stream);
-  auto dataField = jsonResult["layers"][LEVEL_INDEX]["data"].get<vector<uint8_t>>();
+  vector dataField = jsonResult["layers"][LEVEL_INDEX]["data"].get<vector<uint8_t>>();
   level->w = jsonResult["width"].get<int>();
   level->h = jsonResult["height"].get<int>();
   level->level_path = level_name;
-  size_t size_of_cells = sizeof(char) * level->w * level->h;
-  level->cells = (unsigned char*)Memory::Allocate(arena, size_of_cells);  
+  size_t size_of_cells = sizeof(uint8_t) * level->w * level->h;
+  level->cells = (uint8_t*)Memory::Allocate(arena, size_of_cells);  
   for (int i = 0; i < level->w * level->h; i++) {
     level->cells[i] = dataField[i];
   }
@@ -39,7 +39,16 @@ void CreateEntities(LevelData* lvl_data, Arena* arena){
   fstream stream(lvl_data->level_path);
   auto result = nlohmann::json::parse(stream);
   auto entityData = result["layers"][ENTITIES_INDEX]["data"].get<vector<uint8_t>>();
-  lvl_data->entityBuffer = (Entity*)Memory::Allocate(arena, sizeof(Entity) * lvl_data->h * lvl_data->w);
+
+  int entityCount = 0;
+  for (int i = 0; i < lvl_data->w * lvl_data->h; i++) {
+      unsigned char entity_id = entityData[i];
+      if(entity_id != 0){
+        entityCount++;
+      }  
+    }  
+
+  lvl_data->entityBuffer = (Entity*)Memory::Allocate(arena, sizeof(Entity) * entityCount);
   int index = 0;
   for (int i = 0; i < lvl_data->w * lvl_data->h; i++) {
     unsigned char entity_id = entityData[i];
