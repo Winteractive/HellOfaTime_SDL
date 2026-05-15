@@ -19,8 +19,8 @@ SDL_Renderer* renderer;
 Uint64 NOW;
 Uint64 PREV;
 
-constexpr const char* NAME_OF_DLL = "Heartburner_game.dll";
-constexpr const char* NAME_OF_TEMP_DLL = "Heartburner_temp.dll";
+constexpr const char* NAME_OF_DLL = "hellofatime_game.dll";
+constexpr const char* NAME_OF_TEMP_DLL = "hellofatime_temp.dll";
 
 typedef void (*Function_Initialize) (GameData* data, SDL_Renderer* renderer);
 typedef bool (*Function_HandleEvents) (GameData* data, SDL_Event event);
