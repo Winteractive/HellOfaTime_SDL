@@ -1,5 +1,1 @@
-#pragma once
-#include "gameState.h"
-
-void RenderEntities(GameData* gameData, SDL_Renderer* renderer);
-  
+// Deprecated into LevelRenderer.h 
