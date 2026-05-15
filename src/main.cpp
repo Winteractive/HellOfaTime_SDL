@@ -161,6 +161,7 @@ int main() {
  
     gameData->levelCount = 5;
     gameData->levels = (LevelData*)Memory::Allocate(gameData->arena_levels, sizeof(LevelData) * gameData->levelCount);
+    gameData->keys_previous = (bool*)Memory::Allocate(gameData->arena_levels, sizeof(bool) * SDL_SCANCODE_COUNT);
 
     DLL_INFO dll;
     bool dll_successfully_loaded = LoadDLL(&dll);
@@ -220,7 +221,7 @@ int main() {
             }
         }
         else{
-            printf("missed frame \n");
+            //printf("missed frame \n");
         }
     }
 
