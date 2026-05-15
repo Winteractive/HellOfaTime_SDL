@@ -27,7 +27,7 @@ extern "C" {
         return false;
     }
 
-   return true;
+     return true;
   }
   
   void Update(GameData* data,float dt){
@@ -37,13 +37,11 @@ extern "C" {
        
   }
 
-
   void Draw(GameData* data, SDL_Renderer* renderer){
-    SDL_SetRenderDrawColor(renderer, 120, 70, 8, 255);
+    SDL_SetRenderDrawColor(renderer, 120, 70, 120, 255);
     SDL_RenderClear(renderer);
 
-    LevelData currentLevel = data->levels[data->currentLevel];
-    RenderLevel(currentLevel, data, renderer);  
+    RenderLevel(data, renderer);  
     RenderEntities(data, renderer);
         
     SDL_RenderPresent(renderer);

@@ -105,7 +105,7 @@ void SDL_Setup(){
     SDL_Init(SDL_INIT_EVENTS);
     SDL_SetLogPriorities(SDL_LOG_PRIORITY_VERBOSE);
 
-    window = SDL_CreateWindow("pilot", 650, 400, 0);
+    window = SDL_CreateWindow("pilot", SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     renderer = SDL_CreateRenderer(window, NULL);
 }
 
@@ -156,10 +156,7 @@ int main() {
 
     size_t IMAGE_ARENA_SIZE = sizeof(Image) * 100;
     gameData->arena_images = Memory::CreateSubArena(arena_main, IMAGE_ARENA_SIZE);
-
-    size_t LEVEL_ARENA_SIZE = MEGABYTES(3);
-    gameData->arena_levels = Memory::CreateSubArena(arena_main, LEVEL_ARENA_SIZE);
-
+    gameData->arena_levels = Memory::CreateSubArena(arena_main, MEGABYTES(3));
     gameData->arena_entities = Memory::CreateSubArena(gameData->arena_levels, MEGABYTES(1));
  
     gameData->levelCount = 5;
@@ -202,7 +199,7 @@ int main() {
                 if(event.key.key == SDLK_F9){
                     StoreGameState(arena_main);
                 }
-                if(event.key.key == SDLK_F10){
+               if(event.key.key == SDLK_F10){
                     RetrieveGameState(arena_main);
                 }
             }

@@ -7,7 +7,6 @@
 #include "entity.h"
 using namespace std;
 
-
 const int LEVEL_INDEX = 0;
 const int ENTITIES_INDEX = 1;
 
@@ -25,37 +24,31 @@ void CreateLevel(Arena* arena, LevelData* level, const char* level_name){
   }
 }
 
-
-void CreateEntity(LevelData* data, int x, int y, int id){
-  Entity* entity = &data->entityBuffer[data->entityCount];
-  data->entityCount += 1;
-  entity->id = id;
-  entity->x = x;
-  entity->y = y;
-}
-
 void CreateEntities(LevelData* lvl_data, Arena* arena){
   Reset(arena);
+  lvl_data->entityCount = 0;
   fstream stream(lvl_data->level_path);
   auto result = nlohmann::json::parse(stream);
   auto entityData = result["layers"][ENTITIES_INDEX]["data"].get<vector<uint8_t>>();
 
-  int entityCount = 0;
   for (int i = 0; i < lvl_data->w * lvl_data->h; i++) {
       unsigned char entity_id = entityData[i];
       if(entity_id != 0){
-        entityCount++;
+        lvl_data->entityCount++;
       }  
     }  
 
-  lvl_data->entityBuffer = (Entity*)Memory::Allocate(arena, sizeof(Entity) * entityCount);
+  lvl_data->entityBuffer = (Entity*)Memory::Allocate(arena, sizeof(Entity) * lvl_data->entityCount);
   int index = 0;
   for (int i = 0; i < lvl_data->w * lvl_data->h; i++) {
     unsigned char entity_id = entityData[i];
     if(entity_id != 0){
       int x = i % lvl_data->w;
       int y = i / lvl_data->w;
-      CreateEntity(lvl_data, x, y, entity_id);
+      lvl_data->entityBuffer[index].id = entity_id;
+      lvl_data->entityBuffer[index].x  = x;
+      lvl_data->entityBuffer[index].y  = y;
+      index += 1;
     }  
   }
 }

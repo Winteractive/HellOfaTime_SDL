@@ -14,7 +14,4 @@ struct GameData {
   LevelData* levels;
   int levelCount;
   int currentLevel;
-  int xPos;
-  int yPos;
-
 };
