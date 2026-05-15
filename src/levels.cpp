@@ -46,6 +46,7 @@ void CreateEntities(LevelData* lvl_data, Arena* arena){
       int x = i % lvl_data->w;
       int y = i / lvl_data->w;
       lvl_data->entityBuffer[index].id = entity_id;
+      lvl_data->entityBuffer[index].InitializeBaseBehaviour();
       lvl_data->entityBuffer[index].x  = x;
       lvl_data->entityBuffer[index].y  = y;
       index += 1;

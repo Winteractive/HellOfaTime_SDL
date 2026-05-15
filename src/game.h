@@ -9,6 +9,8 @@ extern "C" {
    __declspec(dllexport) void Draw(GameData* data, SDL_Renderer* renderer);
    __declspec(dllexport) void Update(GameData* data, float dt);
    __declspec(dllexport) void OnQuit(SDL_Renderer* renderer);
-
+   bool KeyPressed(SDL_Scancode key, const bool* current, const bool* previous);
+   bool KeyHeld(SDL_Scancode key, const bool* current, const bool* previous);
+   bool KeyReleased(SDL_Scancode key, const bool* current, const bool* previous);
 }
 
