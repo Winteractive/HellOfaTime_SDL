@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 10,
   "configurePresets": [
     {
       "name": "default",
@@ -9,12 +9,26 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_CXX_COMPILER": "clang++"
       }
+    },
+    {
+      "name": "release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_INTERPROCEDURAL_OPTIMIZATION": "TRUE"
+      }
     }
   ],
   "buildPresets": [
     {
       "name": "default",
       "configurePreset": "default"
+    },
+    {
+      "name": "release",
+      "configurePreset": "release"
     }
   ]
 }
