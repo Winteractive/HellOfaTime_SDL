@@ -48,7 +48,7 @@ void RenderEntities(GameData* data, SDL_Renderer* renderer){
     Image* img;
     Entity entity = lvlData.entityBuffer[i];
     switch(entity.id){
-      case 3:
+      case ID::PLAYER:
         img = data->player;
         break;
       default:

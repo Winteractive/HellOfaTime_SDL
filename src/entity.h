@@ -2,23 +2,22 @@
 #include <cassert>
 #include <cstdint>
 
-enum Behaviour : uint8_t {
+enum Behaviour : uint32_t {
   NONE = 0,
   CAN_MOVE = 1 << 0,
-  CAN_BE_PUSHED = 1 << 1,
-  CAN_PUSH = 1 << 2,
-  IS_PLAYER = 1 << 3,
-  RESPOND_TO_INPUT = 1 << 4
+  IS_PLAYER = 1 << 1,
+  RESPOND_TO_INPUT = 1 << 2
 };
 
 enum class ID : uint8_t {
+  NONE = 0,
   GROUND = 1,
   WALL = 2,
   PLAYER = 3
 };
 
 struct Entity{
-  uint8_t id;
+  ID id;
   int x;
   int y;
   Behaviour behaviour;
@@ -28,13 +27,13 @@ struct Entity{
   }
 
   void InitializeBaseBehaviour(){
-    assert(id != 0);
-    switch ((ID)id) {
+    assert(id != ID::NONE);
+    switch (id) {
       default:
         SetBehaviour(NONE);
         break;
       case ID::PLAYER:
-        SetBehaviour((Behaviour)(CAN_MOVE | CAN_PUSH | IS_PLAYER | RESPOND_TO_INPUT));
+        SetBehaviour((Behaviour)(CAN_MOVE | IS_PLAYER | RESPOND_TO_INPUT));
         break;
       }
   }

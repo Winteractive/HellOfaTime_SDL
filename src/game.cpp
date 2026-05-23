@@ -50,9 +50,14 @@ extern "C" {
      return true;
   } 
   
+  
   void Update(GameData* data,float dt){
 
-    const bool* keys = SDL_GetKeyboardState(NULL);
+    const bool* keys = SDL_GetKeyboardState(nullptr);
+
+    if(KeyPressed(SDL_SCANCODE_R, keys, data->keys_previous)){
+      CreateEntities(data->GetCurrentLevel(), data->arena_entities);      
+    }
 
     for (int i = 0; i < data->GetCurrentLevel()->entityCount; i++) {
       Entity* entity = &data->GetCurrentLevel()->entityBuffer[i];
@@ -86,7 +91,6 @@ extern "C" {
             }
           }
         }
-        
       }
     }
 
