@@ -3,41 +3,46 @@
     {
      "export":
         {
-         "format":"json"
+         "format":"json",
+         "target":"testLevel_box.tmj"
         }
     },
- "height":5,
+ "height":7,
  "infinite":false,
  "layers":[
         {
-         "data":[2, 2, 2, 2, 2,
-            2, 2, 1, 1, 2,
-            2, 1, 1, 1, 2,
-            2, 1, 1, 2, 2,
-            2, 2, 2, 2, 2],
-         "height":5,
+         "data":[2, 2, 2, 2, 2, 2, 2,
+            2, 1, 1, 2, 1, 1, 2,
+            2, 1, 1, 1, 1, 1, 2,
+            2, 1, 1, 1, 1, 1, 2,
+            2, 1, 1, 1, 1, 1, 2,
+            2, 1, 1, 1, 1, 1, 2,
+            2, 2, 2, 2, 2, 2, 2],
+         "height":7,
          "id":1,
          "name":"level",
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
-         "width":5,
+         "width":7,
          "x":0,
          "y":0
         }, 
         {
-         "data":[0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0,
-            0, 3, 0, 0, 0,
-            0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0],
-         "height":5,
+         "data":[0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0,
+            0, 0, 3, 4, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0],
+         "height":7,
          "id":2,
          "name":"entities",
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
-         "width":5,
+         "width":7,
          "x":0,
          "y":0
         }],
@@ -55,5 +60,5 @@
  "tilewidth":32,
  "type":"map",
  "version":"1.10",
- "width":5
+ "width":7
 }

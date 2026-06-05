@@ -51,6 +51,9 @@ void RenderEntities(GameData* data, SDL_Renderer* renderer){
       case ID::PLAYER:
         img = data->player;
         break;
+      case ID::BOX:
+        img = data->box;
+        break;
       default:
         img = data->fallback;
         break;

@@ -8,6 +8,7 @@ struct GameData {
   Image* wall;
   Image* ground;
   Image* player;
+  Image* box;
   Memory::Arena* arena_levels;
   Memory::Arena* arena_entities;
   Memory::Arena* arena_images;

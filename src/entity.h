@@ -13,7 +13,8 @@ enum class ID : uint8_t {
   NONE = 0,
   GROUND = 1,
   WALL = 2,
-  PLAYER = 3
+  PLAYER = 3,
+  BOX = 4
 };
 
 struct Entity{
@@ -34,6 +35,9 @@ struct Entity{
         break;
       case ID::PLAYER:
         SetBehaviour((Behaviour)(CAN_MOVE | IS_PLAYER | RESPOND_TO_INPUT));
+        break;
+      case ID::BOX:
+        SetBehaviour((Behaviour)CAN_MOVE);
         break;
       }
   }
