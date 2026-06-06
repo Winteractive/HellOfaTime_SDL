@@ -8,6 +8,7 @@
 #include "SDL3/SDL_stdinc.h"
 #include "SDL3/SDL_timer.h"
 #include "SDL3/SDL_log.h"
+#include "command.h"
 #include "common.h"
 #include "arena.h"
 #include "gameState.h"
@@ -158,10 +159,15 @@ int main() {
     gameData->arena_images = Memory::CreateSubArena(arena_main, IMAGE_ARENA_SIZE);
     gameData->arena_levels = Memory::CreateSubArena(arena_main, MEGABYTES(3));
     gameData->arena_entities = Memory::CreateSubArena(gameData->arena_levels, MEGABYTES(1));
+    gameData->arena_commands = Memory::CreateSubArena(gameData->arena_levels, MEGABYTES(1));
  
     gameData->levelCount = 5;
     gameData->levels = (LevelData*)Memory::Allocate(gameData->arena_levels, sizeof(LevelData) * gameData->levelCount);
     gameData->keys_previous = (bool*)Memory::Allocate(gameData->arena_levels, sizeof(bool) * SDL_SCANCODE_COUNT);
+
+    gameData->commandBuffer = (CommandBuffer*)Memory::Allocate(gameData->arena_commands, sizeof(CommandBuffer));
+    gameData->commandBuffer->capacity = 200;
+    gameData->commandBuffer->allCommands = (AnyCommand*)Memory::Allocate(gameData->arena_commands, sizeof(AnyCommand) * gameData->commandBuffer->capacity);
 
     DLL_INFO dll;
     bool dll_successfully_loaded = LoadDLL(&dll);

@@ -1,5 +1,6 @@
 #pragma once
 #include "arena.h"
+#include "command.h"
 #include "image.h"
 #include "levels.h"
 
@@ -12,10 +13,14 @@ struct GameData {
   Memory::Arena* arena_levels;
   Memory::Arena* arena_entities;
   Memory::Arena* arena_images;
+  Memory::Arena* arena_commands;
+  CommandBuffer* commandBuffer;
+  
   bool* keys_previous;
   LevelData* levels;
   int levelCount;
   int currentLevelIndex;
+  float undo_timer;
 
   LevelData* GetCurrentLevel(){
     return &levels[currentLevelIndex];

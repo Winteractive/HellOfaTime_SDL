@@ -1,13 +1,14 @@
 #include "game.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_scancode.h"
+#include "arena.h"
+#include "command.h"
 #include "entity.h"
 #include "entityrenderer.h"
 #include "gameState.h"
 #include "levels.h"
 #include "image.h"
 #include "levelRenderer.h"
-#include <cstdint>
 
 bool KeyPressed(SDL_Scancode key, const bool* current, const bool* previous){
   if(previous == nullptr){
@@ -62,6 +63,20 @@ extern "C" {
       CreateEntities(data->GetCurrentLevel(), data->arena_entities);      
     }
 
+    if(KeyHeld(SDL_SCANCODE_Z, keys, data->keys_previous)){
+      data->undo_timer -= dt;
+      if(data->undo_timer <= 0.0){
+        data->undo_timer = 0.05;
+        if(KeyHeld(SDL_SCANCODE_LSHIFT, keys, data->keys_previous)){
+          Redo(data->commandBuffer);    
+        }
+        else{
+          Undo(data->commandBuffer);
+        } 
+      }
+      
+    }
+
     for (int i = 0; i < data->GetCurrentLevel()->entityCount; i++) {
       Entity* entity = &data->GetCurrentLevel()->entityBuffer[i];
       
@@ -82,7 +97,7 @@ extern "C" {
         }
 
         if(xChange != 0 || yChange != 0){
-          TryMove(entity, data->GetCurrentLevel(), xChange, yChange);
+          TryMove(entity, data->GetCurrentLevel() , data->commandBuffer, xChange, yChange);
         }
       }
     }
@@ -92,7 +107,7 @@ extern "C" {
   }
 
   
-  bool TryMove(Entity* mover, LevelData* level, int xDir, int yDir){
+  bool TryMove(Entity* mover, LevelData* level, CommandBuffer* cmd_buffer, int xDir, int yDir){
     if(mover->HasBehaviour(CAN_MOVE) == false){
       return false;
     }
@@ -103,17 +118,25 @@ extern "C" {
     ID stepInto_tile_id = (ID)level->GetCellID(test_x, test_y);
     if(stepInto_entity == nullptr){
       if(stepInto_tile_id == ID::GROUND){
-        mover->x = test_x;
-        mover->y = test_y;
+        MoveCommand mv;
+        mv.type = CMD_TYPE::MOVE;
+        mv.entity = mover;
+        mv.xDir = xDir;
+        mv.yDir = yDir;
+        Push(cmd_buffer, mv);
         return true;
       }
       return false;
     }
       
     if(stepInto_entity->HasBehaviour(CAN_MOVE)){
-      if(TryMove(stepInto_entity, level, xDir, yDir)){
-        mover->x = test_x;
-        mover->y = test_y;
+      if(TryMove(stepInto_entity, level, cmd_buffer, xDir, yDir)){
+        MoveCommand mv;
+        mv.type = CMD_TYPE::MOVE;
+        mv.entity = mover;
+        mv.xDir = xDir;
+        mv.yDir = yDir;
+        Push(cmd_buffer, mv);
         return true;
       }
     }
