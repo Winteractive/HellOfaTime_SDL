@@ -165,9 +165,10 @@ int main() {
     gameData->levels = (LevelData*)Memory::Allocate(gameData->arena_levels, sizeof(LevelData) * gameData->levelCount);
     gameData->keys_previous = (bool*)Memory::Allocate(gameData->arena_levels, sizeof(bool) * SDL_SCANCODE_COUNT);
 
-    gameData->commandBuffer = (CommandBuffer*)Memory::Allocate(gameData->arena_commands, sizeof(CommandBuffer));
-    gameData->commandBuffer->capacity = 200;
-    gameData->commandBuffer->allCommands = (AnyCommand*)Memory::Allocate(gameData->arena_commands, sizeof(AnyCommand) * gameData->commandBuffer->capacity);
+    gameData->commandBuffer = (CommandBuffer*)Memory::Allocate(arena_main, sizeof(CommandBuffer));
+    gameData->commandBuffer->capacity = 2000;
+    size_t COMMAND_SIZE = sizeof(AnyCommand) * gameData->commandBuffer->capacity;
+    gameData->commandBuffer->allCommands = (AnyCommand*)Memory::Allocate(gameData->arena_commands, COMMAND_SIZE);
 
     DLL_INFO dll;
     bool dll_successfully_loaded = LoadDLL(&dll);

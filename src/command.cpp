@@ -14,8 +14,9 @@ void Execute(AnyCommand cmd){
 
 void Push(CommandBuffer* buffer, AnyCommand cmd){
   buffer->allCommands[buffer->index] = cmd;
-  Execute(cmd);
   buffer->index++;
+  buffer->head = buffer->index;
+  Execute(cmd);
 }
 
 void Undo(CommandBuffer* buffer){
@@ -38,9 +39,11 @@ void Undo(CommandBuffer* buffer){
 
 void Redo(CommandBuffer *buffer){
   AnyCommand cmd = buffer->allCommands[buffer->index];
+    if(buffer->index == buffer->head){
+    return;
+  }
   Execute(cmd);
   buffer->index++;
-    
 }
 
 

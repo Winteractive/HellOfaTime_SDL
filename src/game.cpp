@@ -1,7 +1,6 @@
 #include "game.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_scancode.h"
-#include "arena.h"
 #include "command.h"
 #include "entity.h"
 #include "entityrenderer.h"
@@ -63,20 +62,15 @@ extern "C" {
       CreateEntities(data->GetCurrentLevel(), data->arena_entities);      
     }
 
-    if(KeyHeld(SDL_SCANCODE_Z, keys, data->keys_previous)){
-      data->undo_timer -= dt;
-      if(data->undo_timer <= 0.0){
-        data->undo_timer = 0.05;
-        if(KeyHeld(SDL_SCANCODE_LSHIFT, keys, data->keys_previous)){
-          Redo(data->commandBuffer);    
-        }
-        else{
-          Undo(data->commandBuffer);
-        } 
+    if(KeyPressed(SDL_SCANCODE_Z, keys, data->keys_previous)){
+      if(KeyHeld(SDL_SCANCODE_LSHIFT, keys, data->keys_previous)){
+        Redo(data->commandBuffer);
       }
-      
+      else{
+        Undo(data->commandBuffer);
+      }
     }
-
+   
     for (int i = 0; i < data->GetCurrentLevel()->entityCount; i++) {
       Entity* entity = &data->GetCurrentLevel()->entityBuffer[i];
       

@@ -11,7 +11,7 @@ struct Command {
   CMD_TYPE type;
 };
 
-struct MoveCommand : Command{
+struct MoveCommand : Command {
   Entity* entity;
   int xDir;
   int yDir;
@@ -20,13 +20,17 @@ struct MoveCommand : Command{
 union AnyCommand {
   Command command;
   MoveCommand move;
-  AnyCommand(MoveCommand mv) : move(mv) {};
+
+  AnyCommand(MoveCommand mv){
+    move = mv;
+  };
 };
 
 struct CommandBuffer{
   AnyCommand* allCommands;
   int capacity;
   int index;
+  int head;
 };
 
 void Push(CommandBuffer* buffer, AnyCommand cmd);
