@@ -9,6 +9,16 @@ set(DIR_ASSETS_ORIGIN ${CMAKE_SOURCE_DIR}/assets)
 set(DIR_ASSETS_DESTINATION $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets)
 set(WINDOWS_LIBRARIES winmm)
 
+# Collect imgui cpp files
+set(IMGUI 
+    src_external/imgui/imgui.cpp
+    src_external/imgui/imgui_draw.cpp
+    src_external/imgui/imgui_tables.cpp
+    src_external/imgui/imgui_widgets.cpp
+    src_external/imgui/imgui_impl_sdlrenderer3.cpp
+    src_external/imgui/imgui_impl_sdl3.cpp
+)
+
 # Flag .EXE specific files
 set(EXE_EXCLUSIVE
     ${CMAKE_SOURCE_DIR}/src/main.cpp
@@ -23,7 +33,7 @@ set(SHARED_SOURCES
 # Create the file references
 file(GLOB_RECURSE LIB_FILES "${CMAKE_SOURCE_DIR}/lib/*.lib")
 file(GLOB_RECURSE DLL_FILES "${CMAKE_SOURCE_DIR}/lib/*.dll")
-file(GLOB_RECURSE DLL_EXCLUSIVE "src/*.cpp")
+file(GLOB_RECURSE DLL_EXCLUSIVE CONFIGURE_DEPENDS "src/*.cpp")
 list(REMOVE_ITEM DLL_EXCLUSIVE
     ${EXE_EXCLUSIVE}
     ${SHARED_SOURCES}
@@ -31,20 +41,21 @@ list(REMOVE_ITEM DLL_EXCLUSIVE
 
 # SHARED STATIC DLL
 add_library(${SHARED_LIB_NAME} STATIC ${SHARED_SOURCES})
-target_include_directories(${SHARED_LIB_NAME} PRIVATE include)
+target_include_directories(${SHARED_LIB_NAME} PRIVATE include src_external)
 
 # EXE
-add_executable(${PROJECT_NAME} ${EXE_EXCLUSIVE})
-target_include_directories(${PROJECT_NAME} PRIVATE include)
+add_executable(${PROJECT_NAME} ${EXE_EXCLUSIVE} ${IMGUI})
+target_include_directories(${PROJECT_NAME} PRIVATE include src_external)
 target_link_libraries(${PROJECT_NAME} PRIVATE 
     ${LIB_FILES} 
     ${WINDOWS_LIBRARIES}
     ${SHARED_LIB_NAME}
 )
 
+
 # GAME DLL
-add_library(${DLL_NAME} SHARED ${DLL_EXCLUSIVE})
-target_include_directories(${DLL_NAME} PRIVATE include)
+add_library(${DLL_NAME} SHARED ${DLL_EXCLUSIVE} ${IMGUI})
+target_include_directories(${DLL_NAME} PRIVATE include src_external)
 target_link_libraries(${DLL_NAME} PRIVATE 
     ${LIB_FILES}
     ${SHARED_LIB_NAME}

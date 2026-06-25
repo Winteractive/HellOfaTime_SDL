@@ -1,13 +1,16 @@
 #include "game.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_scancode.h"
+#include "dev_gui.h"
 #include "command.h"
 #include "entity.h"
 #include "entityrenderer.h"
 #include "gameState.h"
+#include "imgui/imgui.h"
 #include "levels.h"
 #include "image.h"
 #include "levelRenderer.h"
+
 
 bool KeyPressed(SDL_Scancode key, const bool* current, const bool* previous){
   if(previous == nullptr){
@@ -30,7 +33,11 @@ bool KeyReleased(SDL_Scancode key, const bool* current, const bool* previous){
 
 extern "C" {
 
-  void Initialize(GameData* data, SDL_Renderer* renderer){
+  void Initialize(GameData* data, SDL_Window* window, SDL_Renderer* renderer){
+    
+    DEV::Initialize(window, renderer);
+    data->imGui_context = ImGui::GetCurrentContext();
+    
     data->ground = AssetManagement::LoadSprite(data->arena_images, renderer, "ground.png");
     data->wall   = AssetManagement::LoadSprite(data->arena_images, renderer, "wall.png"); 
     data->player = AssetManagement::LoadSprite(data->arena_images, renderer, "player.png");
@@ -39,10 +46,12 @@ extern "C" {
     data->currentLevelIndex = 1;
     CreateLevel(data->arena_levels, &data->levels[0], "assets/levels/testLevel.tmj");
     CreateLevel(data->arena_levels, &data->levels[1], "assets/levels/testLevel_box.tmj");
-    CreateEntities(&data->levels[data->currentLevelIndex], data->arena_entities);  
+    CreateEntities(&data->levels[data->currentLevelIndex], data->arena_entities);
   }
+   
+   bool HandleEvents(GameData *data, SDL_Event event){
+    DEV::ProcessEvents(&event);
 
-  bool HandleEvents(GameData *data, SDL_Event event){
     if(event.type != SDL_EVENT_KEY_DOWN){
         return true;
     }
@@ -137,20 +146,22 @@ extern "C" {
 
     return false;
   }
- 
+    
   void Draw(GameData* data, SDL_Renderer* renderer){
+    DEV::PreDraw(data->imGui_context);
     SDL_SetRenderDrawColor(renderer, 120, 70, 120, 255);
     SDL_RenderClear(renderer);
-
+    
     RenderLevel(data, renderer);  
     RenderEntities(data, renderer);
-        
+
+    DEV::Draw(data, renderer);
     SDL_RenderPresent(renderer);
+    
   }
 
   void OnQuit(SDL_Renderer* renderer){
     SDL_DestroyRenderer(renderer);
   }
-   
 
 }

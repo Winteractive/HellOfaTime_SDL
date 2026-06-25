@@ -3,6 +3,7 @@
 #include <fileapi.h>
 #include <cstdio>
 #include <fstream>
+
 #include "SDL3/SDL_init.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_stdinc.h"
@@ -23,7 +24,7 @@ Uint64 PREV;
 constexpr const char* NAME_OF_DLL = "hellofatime_game.dll";
 constexpr const char* NAME_OF_TEMP_DLL = "hellofatime_temp.dll";
 
-typedef void (*Function_Initialize) (GameData* data, SDL_Renderer* renderer);
+typedef void (*Function_Initialize) (GameData* data, SDL_Window* window, SDL_Renderer* renderer);
 typedef bool (*Function_HandleEvents) (GameData* data, SDL_Event event);
 typedef void (*Function_Update) (GameData* data, float dt);
 typedef void (*Function_Draw) (GameData* data, SDL_Renderer* renderer);
@@ -150,23 +151,24 @@ int main() {
     }
 
     SDL_Setup();    
+
     
     Memory::Arena* arena_main = new Memory::Arena();    
     Memory::Initialize(arena_main, game_memory, GAME_MEMORY_ALLOWANCE);
     GameData* gameData =  (GameData*)Memory::Allocate(arena_main, sizeof(GameData));
 
-    size_t IMAGE_ARENA_SIZE = sizeof(Image) * 100;
+    size_t IMAGE_ARENA_SIZE = sizeof(Image) * 1000;
     gameData->arena_images = Memory::CreateSubArena(arena_main, IMAGE_ARENA_SIZE);
     gameData->arena_levels = Memory::CreateSubArena(arena_main, MEGABYTES(3));
-    gameData->arena_entities = Memory::CreateSubArena(gameData->arena_levels, MEGABYTES(1));
+    gameData->arena_entities = Memory::CreateSubArena(gameData->arena_levels, KILOBYTES(32));
     gameData->arena_commands = Memory::CreateSubArena(gameData->arena_levels, MEGABYTES(1));
  
-    gameData->levelCount = 5;
+    gameData->levelCount = 500;
     gameData->levels = (LevelData*)Memory::Allocate(gameData->arena_levels, sizeof(LevelData) * gameData->levelCount);
     gameData->keys_previous = (bool*)Memory::Allocate(gameData->arena_levels, sizeof(bool) * SDL_SCANCODE_COUNT);
 
     gameData->commandBuffer = (CommandBuffer*)Memory::Allocate(arena_main, sizeof(CommandBuffer));
-    gameData->commandBuffer->capacity = 2000;
+    gameData->commandBuffer->capacity = 20000;
     size_t COMMAND_SIZE = sizeof(AnyCommand) * gameData->commandBuffer->capacity;
     gameData->commandBuffer->allCommands = (AnyCommand*)Memory::Allocate(gameData->arena_commands, COMMAND_SIZE);
 
@@ -177,7 +179,7 @@ int main() {
         return 2;
     }    
 
-    dll.initialize(gameData, renderer);
+    dll.initialize(gameData, window, renderer);
 
     gameData->fallback = AssetManagement::LoadSprite(gameData->arena_images, renderer, "fallback.png");
   
@@ -190,6 +192,8 @@ int main() {
     
     bool running = true;
     float dt;
+    gameData->dt = &dt;
+
     while(running){
 
         DLL_CheckStatus(&dll);        
@@ -198,6 +202,7 @@ int main() {
 
         SDL_Event event;
         while(SDL_PollEvent(&event)){
+
             running = dll.handleEvents(gameData, event);
             if(running == false){
                 break;
@@ -214,8 +219,9 @@ int main() {
         }
 
         dll.update(gameData, dt);
-        dll.draw(gameData, renderer);
 
+        dll.draw(gameData, renderer);
+ 
         double time_to_sleep_ms;
         CalculateRemainingFrameTime_MS(&time_to_sleep_ms);
 

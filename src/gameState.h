@@ -2,6 +2,7 @@
 #include "arena.h"
 #include "command.h"
 #include "image.h"
+#include "imgui/imgui_internal.h"
 #include "levels.h"
 
 struct GameData {
@@ -15,7 +16,9 @@ struct GameData {
   Memory::Arena* arena_images;
   Memory::Arena* arena_commands;
   CommandBuffer* commandBuffer;
-  
+
+  ImGuiContext* imGui_context;
+  const float* dt;  
   bool* keys_previous;
   LevelData* levels;
   int levelCount;
