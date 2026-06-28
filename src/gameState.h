@@ -24,6 +24,7 @@ struct GameData {
   int levelCount;
   int currentLevelIndex;
   float undo_timer;
+  uint32_t command_timestamp;
 
   LevelData* GetCurrentLevel(){
     return &levels[currentLevelIndex];

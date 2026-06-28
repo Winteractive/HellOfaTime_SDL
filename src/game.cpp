@@ -79,6 +79,8 @@ extern "C" {
         Undo(data->commandBuffer);
       }
     }
+
+    data->command_timestamp += 1;
    
     for (int i = 0; i < data->GetCurrentLevel()->entityCount; i++) {
       Entity* entity = &data->GetCurrentLevel()->entityBuffer[i];
@@ -100,7 +102,7 @@ extern "C" {
         }
 
         if(xChange != 0 || yChange != 0){
-          TryMove(entity, data->GetCurrentLevel() , data->commandBuffer, xChange, yChange);
+          TryMove(entity, data->GetCurrentLevel() , data->commandBuffer, xChange, yChange, data->command_timestamp);
         }
       }
     }
@@ -110,7 +112,7 @@ extern "C" {
   }
 
   
-  bool TryMove(Entity* mover, LevelData* level, CommandBuffer* cmd_buffer, int xDir, int yDir){
+  bool TryMove(Entity* mover, LevelData* level, CommandBuffer* cmd_buffer, int xDir, int yDir, int timestamp){
     if(mover->HasBehaviour(CAN_MOVE) == false){
       return false;
     }
@@ -126,20 +128,20 @@ extern "C" {
         mv.entity = mover;
         mv.xDir = xDir;
         mv.yDir = yDir;
-        Push(cmd_buffer, mv);
+        Push(cmd_buffer, mv, timestamp);
         return true;
       }
       return false;
     }
       
     if(stepInto_entity->HasBehaviour(CAN_MOVE)){
-      if(TryMove(stepInto_entity, level, cmd_buffer, xDir, yDir)){
+      if(TryMove(stepInto_entity, level, cmd_buffer, xDir, yDir, timestamp)){
         MoveCommand mv;
         mv.type = CMD_TYPE::MOVE;
         mv.entity = mover;
         mv.xDir = xDir;
         mv.yDir = yDir;
-        Push(cmd_buffer, mv);
+        Push(cmd_buffer, mv, timestamp);
         return true;
       }
     }
