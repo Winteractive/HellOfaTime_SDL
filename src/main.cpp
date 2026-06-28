@@ -158,6 +158,8 @@ int main() {
     GameData* gameData =  (GameData*)Memory::Allocate(arena_main, sizeof(GameData));
 
     size_t IMAGE_ARENA_SIZE = sizeof(Image) * 1000;
+    gameData->fps_buffer_count = 500;
+    gameData->fps_buffer = (float*)Memory::Allocate(arena_main, sizeof(float) * gameData->fps_buffer_count);
     gameData->arena_images = Memory::CreateSubArena(arena_main, IMAGE_ARENA_SIZE);
     gameData->arena_levels = Memory::CreateSubArena(arena_main, MEGABYTES(3));
     gameData->arena_entities = Memory::CreateSubArena(gameData->arena_levels, KILOBYTES(32));

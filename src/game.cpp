@@ -1,6 +1,7 @@
 #include "game.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_scancode.h"
+#include "common.h"
 #include "dev_gui.h"
 #include "command.h"
 #include "entity.h"
@@ -67,6 +68,8 @@ extern "C" {
 
     const bool* keys = SDL_GetKeyboardState(nullptr);
 
+
+
     if(KeyPressed(SDL_SCANCODE_R, keys, data->keys_previous)){
       CreateEntities(data->GetCurrentLevel(), data->arena_entities);      
     }
@@ -81,9 +84,18 @@ extern "C" {
     }
 
     data->command_timestamp += 1;
+
+    
    
     for (int i = 0; i < data->GetCurrentLevel()->entityCount; i++) {
       Entity* entity = &data->GetCurrentLevel()->entityBuffer[i];
+      if(entity->HasPendingMove()){
+        entity->progress_01 += dt * MOVE_SPEED;
+        if(entity->progress_01 >= 1){
+          entity->progress_01 = 0;
+          entity->position_read_count++;
+        }
+      }
       
       if(entity->HasBehaviour((Behaviour)(Behaviour::RESPOND_TO_INPUT | Behaviour::CAN_MOVE))){
         int xChange = 0;
@@ -112,7 +124,7 @@ extern "C" {
   }
 
   
-  bool TryMove(Entity* mover, LevelData* level, CommandBuffer* cmd_buffer, int xDir, int yDir, int timestamp){
+  bool TryMove(Entity* mover, LevelData* level, CommandBuffer* cmd_buffer, int xDir, int yDir, int timestamp, float delay){
     if(mover->HasBehaviour(CAN_MOVE) == false){
       return false;
     }
@@ -125,6 +137,7 @@ extern "C" {
       if(stepInto_tile_id == ID::GROUND){
         MoveCommand mv;
         mv.type = CMD_TYPE::MOVE;
+        mv.delay = delay;
         mv.entity = mover;
         mv.xDir = xDir;
         mv.yDir = yDir;
@@ -135,7 +148,12 @@ extern "C" {
     }
       
     if(stepInto_entity->HasBehaviour(CAN_MOVE)){
-      if(TryMove(stepInto_entity, level, cmd_buffer, xDir, yDir, timestamp)){
+      float push_delay = 0;
+      if(!stepInto_entity->HasPendingMove()){
+        int remaining = mover->GetRemainingAnimationCount();
+        push_delay = remaining - mover->progress_01;
+      }
+      if(TryMove(stepInto_entity, level, cmd_buffer, xDir, yDir, timestamp, push_delay)){
         MoveCommand mv;
         mv.type = CMD_TYPE::MOVE;
         mv.entity = mover;

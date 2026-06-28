@@ -10,6 +10,7 @@ enum class CMD_TYPE : uint8_t{
 struct Command {
   CMD_TYPE type;
   uint32_t timestamp;
+  float delay;
 };
 
 struct MoveCommand : Command {

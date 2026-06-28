@@ -2,6 +2,7 @@
 #include "common.h"
 #include "levels.h"
 #include "rendering.h"
+#include <cmath>
 #include <cstdint>
 
 
@@ -68,8 +69,17 @@ void RenderEntities(GameData* data, SDL_Renderer* renderer){
     xPos -= data->levels[data->currentLevelIndex].w * CELL_SIZE_PX / 2;
     yPos -= data->levels[data->currentLevelIndex].h * CELL_SIZE_PX / 2;
 
-    xPos += entity.x * CELL_SIZE_PX;
-    yPos += entity.y * CELL_SIZE_PX;
+    float x_prev = (float)entity.GetPreviousAnimatedPosition()->x;
+    float y_prev = (float)entity.GetPreviousAnimatedPosition()->y;
+    
+    float t = entity.progress_01;
+    if(t <= 0){
+      t = 0;
+    }
+    float x_animated = std::lerp(x_prev, (float)entity.GetAnimatedPosition()->x, t);
+    float y_animated = std::lerp(y_prev, (float)entity.GetAnimatedPosition()->y, t);
+    xPos += x_animated * CELL_SIZE_PX;
+    yPos += y_animated * CELL_SIZE_PX;
     
     RenderSprite(img, renderer, xPos, yPos);
   }        

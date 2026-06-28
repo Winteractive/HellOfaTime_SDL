@@ -1,10 +1,12 @@
 #include "dev_gui.h"
 #include "SDL3/SDL_video.h"
+#include "common.h"
 #include "gameState.h"
 #include "command.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdlrenderer3.h"
 #include "SDL3/SDL_render.h"
+#include "imgui/imgui_internal.h"
 #include <string>
 
 using namespace std;
@@ -40,8 +42,11 @@ void Draw_Imgui_Arena_Usage(Arena* arena, string name_of_arena){
   ImGui::ProgressBar(fraction, ImVec2(-1,0), barText.c_str());
 }
 
-void DrawFPS(float dt){
-  ImGui::Text("FPS: %0.f", 1 / dt);
+void DrawFPS(GameData* data){
+  data->fps_buffer[data->fps_buffer_index] = 1.0 / *data->dt;
+  data->fps_buffer_index++;
+  data->fps_buffer_index %= data->fps_buffer_count;
+  ImGui::PlotHistogram("fps", data->fps_buffer, data->fps_buffer_count,0,nullptr ,0,FPS, ImVec2(-1,35));
 }
 
 void Draw_History(CommandBuffer* buffer){
@@ -68,7 +73,7 @@ void DEV::Draw(GameData* data, SDL_Renderer* renderer){
 
   Draw_History(data->commandBuffer);
 
-  DrawFPS(*data->dt);
+  DrawFPS(data);
   
   ImGui::End();
 

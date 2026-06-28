@@ -11,6 +11,7 @@ constexpr size_t GAME_MEMORY_ALLOWANCE = MEGABYTES(10);
 constexpr int FPS = 240;
 const double FRAME_TIME_MS = 1000.0 / FPS;
 
+const float MOVE_SPEED = 6.0;
 const int SCREEN_WIDTH = 1920;
 const int SCREEN_HEIGHT = 1080;
 const int UPSCALE_FACTOR = 2;

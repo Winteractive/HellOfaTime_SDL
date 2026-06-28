@@ -1,6 +1,6 @@
 #include "command.h"
 
-void Execute(AnyCommand cmd){
+void Execute(AnyCommand cmd, bool from_redo = false){
   switch(cmd.command.type){
   case CMD_TYPE::NONE:
     break;
@@ -8,6 +8,15 @@ void Execute(AnyCommand cmd){
     MoveCommand mv = cmd.move;
     mv.entity->x += mv.xDir;
     mv.entity->y += mv.yDir;
+    mv.entity->AddAnimatedPositionToQueue(mv.entity->x, mv.entity->y);
+    if(from_redo){
+      mv.entity->progress_01 = 1;
+      mv.delay = 0;
+      mv.entity->SkipToLastAnimation();
+    }
+
+    mv.entity->progress_01 -= mv.delay;
+    
     break;
   }
 }
@@ -35,6 +44,10 @@ void Undo(CommandBuffer* buffer){
       MoveCommand mv = cmd.move;
       mv.entity->x -= mv.xDir;      
       mv.entity->y -= mv.yDir;      
+      mv.entity->AddAnimatedPositionToQueue(mv.entity->x, mv.entity->y);
+      mv.entity->SkipToLastAnimation();
+      mv.entity->progress_01 = 1;
+      mv.delay = 0;
       break;
   }
 
@@ -51,7 +64,8 @@ void Redo(CommandBuffer *buffer){
     return;
   }
   int timestamp = cmd.command.timestamp;
-  Execute(cmd);
+  Execute(cmd, true);
+
   buffer->index++;
 
   if(buffer->index != buffer->head){

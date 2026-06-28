@@ -26,6 +26,10 @@ struct GameData {
   float undo_timer;
   uint32_t command_timestamp;
 
+  float* fps_buffer;
+  int fps_buffer_count;
+  int fps_buffer_index;
+
   LevelData* GetCurrentLevel(){
     return &levels[currentLevelIndex];
   }

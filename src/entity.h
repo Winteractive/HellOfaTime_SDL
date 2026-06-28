@@ -17,11 +17,49 @@ enum class ID : uint8_t {
   BOX = 4
 };
 
+struct Position{
+  int x;
+  int y;
+};
+
 struct Entity{
   ID id;
   int x;
   int y;
+  Position* positions;
+  int position_capacity;
+  int position_write_count;
+  int position_read_count;
+  float progress_01;
   Behaviour behaviour;
+
+  void AddAnimatedPositionToQueue(int x_pos, int y_pos){
+    positions[position_write_count % position_capacity] = {x_pos, y_pos};
+    position_write_count++;
+  }
+
+  void SkipToLastAnimation(){
+    position_read_count = position_write_count - 1;
+  }
+
+  int GetRemainingAnimationCount(){
+    return position_write_count - position_read_count;
+  }
+
+  bool HasPendingMove(){
+    return position_read_count < position_write_count;
+  }
+
+  Position* GetAnimatedPosition(){
+    return &positions[position_read_count % position_capacity];
+  }
+
+  Position* GetPreviousAnimatedPosition(){
+    if(position_read_count == 0){
+      return &positions[0];
+    }
+    return &positions[(position_read_count - 1) % position_capacity];
+  }
 
   bool HasBehaviour(Behaviour flags){
     return (behaviour & flags) == flags;
