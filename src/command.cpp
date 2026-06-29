@@ -6,17 +6,15 @@ void Execute(AnyCommand cmd, bool from_redo = false){
     break;
   case CMD_TYPE::MOVE:
     MoveCommand mv = cmd.move;
+    mv.entity->x_prev = mv.entity->x;
+    mv.entity->y_prev = mv.entity->y;
     mv.entity->x += mv.xDir;
     mv.entity->y += mv.yDir;
-    mv.entity->AddAnimatedPositionToQueue(mv.entity->x, mv.entity->y);
-    if(from_redo){
+    mv.entity->is_moving = true;
+   if(from_redo){
       mv.entity->progress_01 = 1;
-      mv.delay = 0;
-      mv.entity->SkipToLastAnimation();
     }
-
-    mv.entity->progress_01 -= mv.delay;
-    
+   
     break;
   }
 }
@@ -44,10 +42,7 @@ void Undo(CommandBuffer* buffer){
       MoveCommand mv = cmd.move;
       mv.entity->x -= mv.xDir;      
       mv.entity->y -= mv.yDir;      
-      mv.entity->AddAnimatedPositionToQueue(mv.entity->x, mv.entity->y);
-      mv.entity->SkipToLastAnimation();
       mv.entity->progress_01 = 1;
-      mv.delay = 0;
       break;
   }
 

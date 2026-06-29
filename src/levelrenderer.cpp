@@ -68,16 +68,9 @@ void RenderEntities(GameData* data, SDL_Renderer* renderer){
     
     xPos -= data->levels[data->currentLevelIndex].w * CELL_SIZE_PX / 2;
     yPos -= data->levels[data->currentLevelIndex].h * CELL_SIZE_PX / 2;
-
-    float x_prev = (float)entity.GetPreviousAnimatedPosition()->x;
-    float y_prev = (float)entity.GetPreviousAnimatedPosition()->y;
-    
-    float t = entity.progress_01;
-    if(t <= 0){
-      t = 0;
-    }
-    float x_animated = std::lerp(x_prev, (float)entity.GetAnimatedPosition()->x, t);
-    float y_animated = std::lerp(y_prev, (float)entity.GetAnimatedPosition()->y, t);
+        
+    float x_animated = std::lerp(entity.x_prev, entity.x, entity.progress_01);
+    float y_animated = std::lerp(entity.y_prev, entity.y, entity.progress_01);
     xPos += x_animated * CELL_SIZE_PX;
     yPos += y_animated * CELL_SIZE_PX;
     

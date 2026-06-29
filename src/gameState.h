@@ -1,6 +1,7 @@
 #pragma once
 #include "arena.h"
 #include "command.h"
+#include "entity.h"
 #include "image.h"
 #include "imgui/imgui_internal.h"
 #include "levels.h"
@@ -25,6 +26,11 @@ struct GameData {
   int currentLevelIndex;
   float undo_timer;
   uint32_t command_timestamp;
+
+  Position* input_buffer;
+  int input_buffer_capacity;
+  int input_buffer_write_count;
+  int input_buffer_read_count;
 
   float* fps_buffer;
   int fps_buffer_count;

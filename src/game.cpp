@@ -62,13 +62,10 @@ extern "C" {
 
      return true;
   } 
-  
-  
+
   void Update(GameData* data,float dt){
 
     const bool* keys = SDL_GetKeyboardState(nullptr);
-
-
 
     if(KeyPressed(SDL_SCANCODE_R, keys, data->keys_previous)){
       CreateEntities(data->GetCurrentLevel(), data->arena_entities);      
@@ -86,45 +83,58 @@ extern "C" {
     data->command_timestamp += 1;
 
     
-   
+    if(KeyPressed(SDL_SCANCODE_RIGHT, keys, data->keys_previous)){
+      data->input_buffer[data->input_buffer_write_count++ % data->input_buffer_capacity] = {1, 0};
+    }
+    else if(KeyPressed(SDL_SCANCODE_LEFT, keys, data->keys_previous)){
+      data->input_buffer[data->input_buffer_write_count++ % data->input_buffer_capacity] = {-1, 0};
+    }
+    else if(KeyPressed(SDL_SCANCODE_UP, keys, data->keys_previous)){
+      data->input_buffer[data->input_buffer_write_count++ % data->input_buffer_capacity] = {0, -1};
+    }
+    else if(KeyPressed(SDL_SCANCODE_DOWN, keys, data->keys_previous)){
+      data->input_buffer[data->input_buffer_write_count++ % data->input_buffer_capacity] = {0, 1};
+    }
+
+    bool are_entities_moving = false;
     for (int i = 0; i < data->GetCurrentLevel()->entityCount; i++) {
       Entity* entity = &data->GetCurrentLevel()->entityBuffer[i];
-      if(entity->HasPendingMove()){
-        entity->progress_01 += dt * MOVE_SPEED;
+      if(entity->HasBehaviour(CAN_MOVE) && entity->is_moving){
+        entity->progress_01 += MOVE_SPEED * dt;
         if(entity->progress_01 >= 1){
           entity->progress_01 = 0;
-          entity->position_read_count++;
+          entity->x_prev = entity->x;
+          entity->y_prev = entity->y;
+          entity->is_moving = false;
         }
-      }
-      
-      if(entity->HasBehaviour((Behaviour)(Behaviour::RESPOND_TO_INPUT | Behaviour::CAN_MOVE))){
-        int xChange = 0;
-        int yChange = 0;
-        if(KeyPressed(SDL_SCANCODE_RIGHT, keys, data->keys_previous)){
-          xChange = 1;
-        }
-        else if(KeyPressed(SDL_SCANCODE_LEFT, keys, data->keys_previous)){
-          xChange = -1;
-        }
-        else if(KeyPressed(SDL_SCANCODE_UP, keys, data->keys_previous)){
-          yChange = -1;
-        }
-        else if(KeyPressed(SDL_SCANCODE_DOWN, keys, data->keys_previous)){
-          yChange = 1;
-        }
-
-        if(xChange != 0 || yChange != 0){
-          TryMove(entity, data->GetCurrentLevel() , data->commandBuffer, xChange, yChange, data->command_timestamp);
+        if(entity->progress_01 > 0 && entity->progress_01 < 1){
+          are_entities_moving = true;
         }
       }
     }
 
-  memcpy((void*)data->keys_previous, keys, SDL_SCANCODE_COUNT * sizeof(bool));
-         
-  }
+    
+    if(are_entities_moving == false){
+      if(data->input_buffer_read_count == data->input_buffer_write_count){
+        return;
+      }
 
+      data->command_timestamp += 1;
+
+      for (int i = 0; i < data->GetCurrentLevel()->entityCount; i++) {
+        Entity* entity = &data->GetCurrentLevel()->entityBuffer[i];
+        if(entity->HasBehaviour((Behaviour)(RESPOND_TO_INPUT | CAN_MOVE))){
+          int xDir = data->input_buffer[data->input_buffer_read_count % data->input_buffer_capacity].x;
+          int yDir = data->input_buffer[data->input_buffer_read_count % data->input_buffer_capacity].y;
+          TryMove(entity, data->GetCurrentLevel(), data->commandBuffer, xDir, yDir, data->command_timestamp);
+        }
+      }  
+      data->input_buffer_read_count++;
+    }
+  }
+ 
   
-  bool TryMove(Entity* mover, LevelData* level, CommandBuffer* cmd_buffer, int xDir, int yDir, int timestamp, float delay){
+  bool TryMove(Entity* mover, LevelData* level, CommandBuffer* cmd_buffer, int xDir, int yDir, int timestamp){
     if(mover->HasBehaviour(CAN_MOVE) == false){
       return false;
     }
@@ -137,7 +147,6 @@ extern "C" {
       if(stepInto_tile_id == ID::GROUND){
         MoveCommand mv;
         mv.type = CMD_TYPE::MOVE;
-        mv.delay = delay;
         mv.entity = mover;
         mv.xDir = xDir;
         mv.yDir = yDir;
@@ -148,12 +157,7 @@ extern "C" {
     }
       
     if(stepInto_entity->HasBehaviour(CAN_MOVE)){
-      float push_delay = 0;
-      if(!stepInto_entity->HasPendingMove()){
-        int remaining = mover->GetRemainingAnimationCount();
-        push_delay = remaining - mover->progress_01;
-      }
-      if(TryMove(stepInto_entity, level, cmd_buffer, xDir, yDir, timestamp, push_delay)){
+      if(TryMove(stepInto_entity, level, cmd_buffer, xDir, yDir, timestamp)){
         MoveCommand mv;
         mv.type = CMD_TYPE::MOVE;
         mv.entity = mover;

@@ -5,6 +5,7 @@
 #include <fstream>
 
 #include "SDL3/SDL_init.h"
+#include "SDL3/SDL_keyboard.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_stdinc.h"
 #include "SDL3/SDL_timer.h"
@@ -160,10 +161,15 @@ int main() {
     size_t IMAGE_ARENA_SIZE = sizeof(Image) * 1000;
     gameData->fps_buffer_count = 500;
     gameData->fps_buffer = (float*)Memory::Allocate(arena_main, sizeof(float) * gameData->fps_buffer_count);
+
+    
     gameData->arena_images = Memory::CreateSubArena(arena_main, IMAGE_ARENA_SIZE);
     gameData->arena_levels = Memory::CreateSubArena(arena_main, MEGABYTES(3));
     gameData->arena_entities = Memory::CreateSubArena(gameData->arena_levels, KILOBYTES(32));
     gameData->arena_commands = Memory::CreateSubArena(gameData->arena_levels, MEGABYTES(1));
+
+    gameData->input_buffer_capacity = 25;
+    gameData->input_buffer = (Position*)Memory::Allocate(gameData->arena_levels, sizeof(Position) * gameData->input_buffer_capacity);
  
     gameData->levelCount = 500;
     gameData->levels = (LevelData*)Memory::Allocate(gameData->arena_levels, sizeof(LevelData) * gameData->levelCount);
@@ -221,6 +227,8 @@ int main() {
         }
 
         dll.update(gameData, dt);
+        
+        memcpy((void*)gameData->keys_previous, SDL_GetKeyboardState(nullptr), SDL_SCANCODE_COUNT * sizeof(bool));
 
         dll.draw(gameData, renderer);
  

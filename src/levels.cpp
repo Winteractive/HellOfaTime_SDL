@@ -49,10 +49,8 @@ void CreateEntities(LevelData* lvl_data, Arena* arena){
       lvl_data->entityBuffer[index].InitializeBaseBehaviour();
       lvl_data->entityBuffer[index].x  = x;
       lvl_data->entityBuffer[index].y  = y;
-      lvl_data->entityBuffer[index].position_capacity = 10;
-      lvl_data->entityBuffer[index].positions = (Position*)Memory::Allocate(arena, sizeof(Position) * 10);
-      lvl_data->entityBuffer[index].progress_01 = 1;
-      lvl_data->entityBuffer[index].AddAnimatedPositionToQueue(x, y);
+      lvl_data->entityBuffer[index].x_prev = x;
+      lvl_data->entityBuffer[index].y_prev = y;
       index += 1;
     }  
   }
