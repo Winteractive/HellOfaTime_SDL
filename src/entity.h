@@ -28,7 +28,6 @@ struct Entity{
   int y;
   int x_prev;
   int y_prev;
-  bool is_moving;
   float progress_01;
   Behaviour behaviour;
 
@@ -65,3 +64,6 @@ struct Entity{
   }
     
 };
+
+bool IsMoving(Entity* e);
+

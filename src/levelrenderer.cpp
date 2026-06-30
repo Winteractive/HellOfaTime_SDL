@@ -3,8 +3,6 @@
 #include "levels.h"
 #include "rendering.h"
 #include <cmath>
-#include <cstdint>
-
 
 void RenderLevel(GameData* gameData, SDL_Renderer* renderer){
 

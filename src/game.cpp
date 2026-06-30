@@ -80,9 +80,7 @@ extern "C" {
       }
     }
 
-    data->command_timestamp += 1;
 
-    
     if(KeyPressed(SDL_SCANCODE_RIGHT, keys, data->keys_previous)){
       data->input_buffer[data->input_buffer_write_count++ % data->input_buffer_capacity] = {1, 0};
     }
@@ -99,15 +97,14 @@ extern "C" {
     bool are_entities_moving = false;
     for (int i = 0; i < data->GetCurrentLevel()->entityCount; i++) {
       Entity* entity = &data->GetCurrentLevel()->entityBuffer[i];
-      if(entity->HasBehaviour(CAN_MOVE) && entity->is_moving){
+      if(entity->HasBehaviour(CAN_MOVE) && IsMoving(entity)){
         entity->progress_01 += MOVE_SPEED * dt;
         if(entity->progress_01 >= 1){
           entity->progress_01 = 0;
           entity->x_prev = entity->x;
           entity->y_prev = entity->y;
-          entity->is_moving = false;
         }
-        if(entity->progress_01 > 0 && entity->progress_01 < 1){
+        if(IsMoving(entity)){
           are_entities_moving = true;
         }
       }

@@ -10,7 +10,6 @@ void Execute(AnyCommand cmd, bool from_redo = false){
     mv.entity->y_prev = mv.entity->y;
     mv.entity->x += mv.xDir;
     mv.entity->y += mv.yDir;
-    mv.entity->is_moving = true;
    if(from_redo){
       mv.entity->progress_01 = 1;
     }

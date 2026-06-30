@@ -168,8 +168,9 @@ int main() {
     gameData->arena_entities = Memory::CreateSubArena(gameData->arena_levels, KILOBYTES(32));
     gameData->arena_commands = Memory::CreateSubArena(gameData->arena_levels, MEGABYTES(1));
 
-    gameData->input_buffer_capacity = 25;
-    gameData->input_buffer = (Position*)Memory::Allocate(gameData->arena_levels, sizeof(Position) * gameData->input_buffer_capacity);
+    gameData->input_buffer_capacity = 50;
+    size_t RING_BUFFER_SIZE = sizeof(Position) * gameData->input_buffer_capacity;
+    gameData->input_buffer = (Position*)Memory::Allocate(gameData->arena_levels, RING_BUFFER_SIZE);
  
     gameData->levelCount = 500;
     gameData->levels = (LevelData*)Memory::Allocate(gameData->arena_levels, sizeof(LevelData) * gameData->levelCount);
