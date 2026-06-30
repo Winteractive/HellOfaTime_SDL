@@ -26,7 +26,8 @@ struct GameData {
   int currentLevelIndex;
   float undo_timer;
   uint32_t command_timestamp;
-
+  float* held_key_timers;
+  
   Position* input_buffer;
   int input_buffer_capacity;
   int input_buffer_write_count;

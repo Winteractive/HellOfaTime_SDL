@@ -19,6 +19,11 @@ bool KeyPressed(SDL_Scancode key, const bool* current, const bool* previous){
   }
   return current[key] && !previous[key];
 }
+
+bool KeyHeld_ForTime(SDL_Scancode key, float min_length, float* held_timers){
+  return held_timers[key] >= min_length;
+}
+
 bool KeyHeld(SDL_Scancode key, const bool* current, const bool* previous){
   if(previous == nullptr){
     return false;
@@ -71,7 +76,8 @@ extern "C" {
       CreateEntities(data->GetCurrentLevel(), data->arena_entities);      
     }
 
-    if(KeyPressed(SDL_SCANCODE_Z, keys, data->keys_previous)){
+    if(KeyPressed(SDL_SCANCODE_Z, keys, data->keys_previous) || KeyHeld_ForTime(SDL_SCANCODE_Z, UNDO_REPEAT_TIME, data->held_key_timers)){
+      data->held_key_timers[SDL_SCANCODE_Z] -= UNDO_REPEAT_TIME;
       if(KeyHeld(SDL_SCANCODE_LSHIFT, keys, data->keys_previous)){
         Redo(data->commandBuffer);
       }
@@ -81,16 +87,20 @@ extern "C" {
     }
 
 
-    if(KeyPressed(SDL_SCANCODE_RIGHT, keys, data->keys_previous)){
+    if(KeyPressed(SDL_SCANCODE_RIGHT, keys, data->keys_previous) || KeyHeld_ForTime(SDL_SCANCODE_RIGHT, (1 / MOVE_SPEED) * 1.05, data->held_key_timers)){
+      data->held_key_timers[SDL_SCANCODE_RIGHT] = 0;
       data->input_buffer[data->input_buffer_write_count++ % data->input_buffer_capacity] = {1, 0};
     }
-    else if(KeyPressed(SDL_SCANCODE_LEFT, keys, data->keys_previous)){
+    else if(KeyPressed(SDL_SCANCODE_LEFT, keys, data->keys_previous) || KeyHeld_ForTime(SDL_SCANCODE_LEFT, (1 / MOVE_SPEED) * 1.05, data->held_key_timers)){
+      data->held_key_timers[SDL_SCANCODE_LEFT] = 0;
       data->input_buffer[data->input_buffer_write_count++ % data->input_buffer_capacity] = {-1, 0};
     }
-    else if(KeyPressed(SDL_SCANCODE_UP, keys, data->keys_previous)){
+    else if(KeyPressed(SDL_SCANCODE_UP, keys, data->keys_previous) || KeyHeld_ForTime(SDL_SCANCODE_UP, (1 / MOVE_SPEED) * 1.05, data->held_key_timers)){
+      data->held_key_timers[SDL_SCANCODE_UP] = 0;
       data->input_buffer[data->input_buffer_write_count++ % data->input_buffer_capacity] = {0, -1};
     }
-    else if(KeyPressed(SDL_SCANCODE_DOWN, keys, data->keys_previous)){
+    else if(KeyPressed(SDL_SCANCODE_DOWN, keys, data->keys_previous) || KeyHeld_ForTime(SDL_SCANCODE_DOWN, (1 / MOVE_SPEED) * 1.05, data->held_key_timers)){
+      data->held_key_timers[SDL_SCANCODE_DOWN] = 0;
       data->input_buffer[data->input_buffer_write_count++ % data->input_buffer_capacity] = {0, 1};
     }
 
