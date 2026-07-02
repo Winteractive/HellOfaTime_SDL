@@ -28,6 +28,7 @@ set(EXE_EXCLUSIVE
 set(SHARED_SOURCES 
     ${CMAKE_SOURCE_DIR}/src/image.cpp
     ${CMAKE_SOURCE_DIR}/src/arena.cpp
+    ${CMAKE_SOURCE_DIR}/src/input.cpp
 )
 
 # Create the file references

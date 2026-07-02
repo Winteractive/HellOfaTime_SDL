@@ -8,34 +8,14 @@
 #include "entityrenderer.h"
 #include "gameState.h"
 #include "imgui/imgui.h"
+#include "input.h"
 #include "levels.h"
 #include "image.h"
 #include "levelRenderer.h"
+#include <cmath>
 
 
-bool KeyPressed(SDL_Scancode key, const bool* current, const bool* previous){
-  if(previous == nullptr){
-    return current[key];
-  }
-  return current[key] && !previous[key];
-}
 
-bool KeyHeld_ForTime(SDL_Scancode key, float min_length, float* held_timers){
-  return held_timers[key] >= min_length;
-}
-
-bool KeyHeld(SDL_Scancode key, const bool* current, const bool* previous){
-  if(previous == nullptr){
-    return false;
-  }
-  return current[key] && previous[key];
-}
-bool KeyReleased(SDL_Scancode key, const bool* current, const bool* previous){
-  if(previous == nullptr){
-    return false;
-  }
-  return !current[key] && previous[key];
-}
 
 extern "C" {
 
@@ -71,14 +51,13 @@ extern "C" {
   void Update(GameData* data,float dt){
 
     const bool* keys = SDL_GetKeyboardState(nullptr);
-
-    if(KeyPressed(SDL_SCANCODE_R, keys, data->keys_previous)){
-      CreateEntities(data->GetCurrentLevel(), data->arena_entities);      
+    float undo_speed_up = std::lerp(1.0, 0.15, (data->commandBuffer->head - data->commandBuffer->index) * (1.0/30.0));
+    if(undo_speed_up < 0.15){
+      undo_speed_up = 0.15;
     }
-
-    if(KeyPressed(SDL_SCANCODE_Z, keys, data->keys_previous) || KeyHeld_ForTime(SDL_SCANCODE_Z, UNDO_REPEAT_TIME, data->held_key_timers)){
-      data->held_key_timers[SDL_SCANCODE_Z] -= UNDO_REPEAT_TIME;
-      if(KeyHeld(SDL_SCANCODE_LSHIFT, keys, data->keys_previous)){
+    if(KeyPressed(data->input, SDL_SCANCODE_Z) || KeyHeld_ForTime(data->input, SDL_SCANCODE_Z, UNDO_REPEAT_TIME * undo_speed_up)){
+      ResetKeyHeldTime(&data->input, SDL_SCANCODE_Z);
+      if(KeyHeld(data->input, SDL_SCANCODE_LSHIFT)){
         Redo(data->commandBuffer);
       }
       else{
@@ -87,23 +66,23 @@ extern "C" {
     }
 
 
-    if(KeyPressed(SDL_SCANCODE_RIGHT, keys, data->keys_previous) || KeyHeld_ForTime(SDL_SCANCODE_RIGHT, (1 / MOVE_SPEED) * 1.05, data->held_key_timers)){
-      data->held_key_timers[SDL_SCANCODE_RIGHT] = 0;
+    if(KeyPressed(data->input,SDL_SCANCODE_RIGHT) || KeyHeld_ForTime(data->input,SDL_SCANCODE_RIGHT, (1 / MOVE_SPEED) * 1.15)){
+      ResetKeyHeldTime(&data->input, SDL_SCANCODE_RIGHT);
       data->input_buffer[data->input_buffer_write_count++ % data->input_buffer_capacity] = {1, 0};
     }
-    else if(KeyPressed(SDL_SCANCODE_LEFT, keys, data->keys_previous) || KeyHeld_ForTime(SDL_SCANCODE_LEFT, (1 / MOVE_SPEED) * 1.05, data->held_key_timers)){
-      data->held_key_timers[SDL_SCANCODE_LEFT] = 0;
+    else if(KeyPressed(data->input,SDL_SCANCODE_LEFT) || KeyHeld_ForTime(data->input,SDL_SCANCODE_LEFT, (1 / MOVE_SPEED) * 1.15)){
+      ResetKeyHeldTime(&data->input, SDL_SCANCODE_LEFT);
       data->input_buffer[data->input_buffer_write_count++ % data->input_buffer_capacity] = {-1, 0};
     }
-    else if(KeyPressed(SDL_SCANCODE_UP, keys, data->keys_previous) || KeyHeld_ForTime(SDL_SCANCODE_UP, (1 / MOVE_SPEED) * 1.05, data->held_key_timers)){
-      data->held_key_timers[SDL_SCANCODE_UP] = 0;
+    else if(KeyPressed(data->input,SDL_SCANCODE_UP) || KeyHeld_ForTime(data->input,SDL_SCANCODE_UP, (1 / MOVE_SPEED) * 1.15)){
+      ResetKeyHeldTime(&data->input, SDL_SCANCODE_UP);
       data->input_buffer[data->input_buffer_write_count++ % data->input_buffer_capacity] = {0, -1};
     }
-    else if(KeyPressed(SDL_SCANCODE_DOWN, keys, data->keys_previous) || KeyHeld_ForTime(SDL_SCANCODE_DOWN, (1 / MOVE_SPEED) * 1.05, data->held_key_timers)){
-      data->held_key_timers[SDL_SCANCODE_DOWN] = 0;
+    else if(KeyPressed(data->input,SDL_SCANCODE_DOWN) || KeyHeld_ForTime(data->input,SDL_SCANCODE_DOWN, (1 / MOVE_SPEED) * 1.15)){
+      ResetKeyHeldTime(&data->input, SDL_SCANCODE_DOWN);
       data->input_buffer[data->input_buffer_write_count++ % data->input_buffer_capacity] = {0, 1};
     }
-
+    
     bool are_entities_moving = false;
     for (int i = 0; i < data->GetCurrentLevel()->entityCount; i++) {
       Entity* entity = &data->GetCurrentLevel()->entityBuffer[i];

@@ -4,6 +4,7 @@
 #include "entity.h"
 #include "image.h"
 #include "imgui/imgui_internal.h"
+#include "input.h"
 #include "levels.h"
 
 struct GameData {
@@ -18,15 +19,15 @@ struct GameData {
   Memory::Arena* arena_commands;
   CommandBuffer* commandBuffer;
 
+  Input input;
+
   ImGuiContext* imGui_context;
   const float* dt;  
-  bool* keys_previous;
   LevelData* levels;
   int levelCount;
   int currentLevelIndex;
   float undo_timer;
   uint32_t command_timestamp;
-  float* held_key_timers;
   
   Position* input_buffer;
   int input_buffer_capacity;
