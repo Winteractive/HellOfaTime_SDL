@@ -156,6 +156,7 @@ int main() {
     Memory::Arena* arena_main = new Memory::Arena();    
     Memory::Initialize(arena_main, game_memory, GAME_MEMORY_ALLOWANCE);
     GameData* gameData =  (GameData*)Memory::Allocate(arena_main, sizeof(GameData));
+    gameData->arena_main = arena_main;
 
     size_t IMAGE_ARENA_SIZE = sizeof(Image) * 1000;
     gameData->fps_buffer_count = 500;
@@ -164,6 +165,7 @@ int main() {
     size_t INPUT_ARENA_SIZE = 0;
     INPUT_ARENA_SIZE += sizeof(bool) * SDL_SCANCODE_COUNT * 2;
     INPUT_ARENA_SIZE += sizeof(float) * SDL_SCANCODE_COUNT * 1;
+    INPUT_ARENA_SIZE += 128;
     gameData->arena_input = Memory::CreateSubArena(arena_main, INPUT_ARENA_SIZE);
 
     gameData->input.keys_current = (bool*)Memory::Allocate(gameData->arena_input, sizeof(bool) * SDL_SCANCODE_COUNT);

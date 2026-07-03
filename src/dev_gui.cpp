@@ -66,11 +66,14 @@ void DEV::Draw(GameData* data, SDL_Renderer* renderer){
   ImGui::Begin("Dev Tools");
   ImGui::Text("memory arena usage amount");
 
+  
+  Draw_Imgui_Arena_Usage(data->arena_main, "all memory");
   Draw_Imgui_Arena_Usage(data->arena_images, "images");
   Draw_Imgui_Arena_Usage(data->arena_levels, "levels");
   Draw_Imgui_Arena_Usage(data->arena_commands, "commands");
   Draw_Imgui_Arena_Usage(data->arena_entities, "entities");
-
+  Draw_Imgui_Arena_Usage(data->arena_input, "input");
+ 
   Draw_History(data->commandBuffer);
 
   DrawFPS(data);
