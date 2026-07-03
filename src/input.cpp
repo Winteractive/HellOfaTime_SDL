@@ -1,28 +1,29 @@
 #include "input.h"
+#include <cstring>
 
-bool KeyPressed(Input input,SDL_Scancode key){
-  if(input.keys_previous == nullptr){
-    return input.keys_current[key];
+bool KeyPressed(const Input* input,SDL_Scancode key){
+  if(input->keys_previous == nullptr){
+    return input->keys_current[key];
   }
-  return input.keys_current[key] && !input.keys_previous[key];
+  return input->keys_current[key] && !input->keys_previous[key];
 }
 
-bool KeyHeld_ForTime(Input input, SDL_Scancode key, float min_length){
-  return input.keys_held_time[key] >= min_length; 
-}
-
-bool KeyHeld(Input input, SDL_Scancode key){
-  if(input.keys_previous == nullptr){
+bool KeyHeld(const Input* input, SDL_Scancode key){
+  if(input->keys_previous == nullptr){
     return false;
   }
-  return input.keys_current[key] && input.keys_previous[key];
+  return input->keys_current[key] && input->keys_previous[key];
 }
 
-bool KeyReleased(Input input,SDL_Scancode key){
-  if(input.keys_previous == nullptr){
+bool KeyReleased(const Input* input,SDL_Scancode key){
+  if(input->keys_previous == nullptr){
     return false;
   }
-  return !input.keys_current[key] && input.keys_previous[key];
+  return !input->keys_current[key] && input->keys_previous[key];
+}
+
+bool KeyHeld_ForTime(const Input* input, SDL_Scancode key, float min_length){
+  return input->keys_held_time[key] >= min_length; 
 }
 
 void UpdateKeys(Input* input, float dt){
@@ -39,4 +40,10 @@ void UpdateKeys(Input* input, float dt){
 
 void ResetKeyHeldTime(Input* input,SDL_Scancode key){
   input->keys_held_time[key] = 0;
+}
+ 
+void ResetAll(Input* input){
+  memset((void*)input->keys_current, 0, sizeof(bool) * SDL_SCANCODE_COUNT);
+  memset((void*)input->keys_previous, 0, sizeof(bool) * SDL_SCANCODE_COUNT);
+  memset((void*)input->keys_held_time, 0, sizeof(float) * SDL_SCANCODE_COUNT);
 }

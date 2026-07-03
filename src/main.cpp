@@ -153,7 +153,6 @@ int main() {
 
     SDL_Setup();    
 
-    
     Memory::Arena* arena_main = new Memory::Arena();    
     Memory::Initialize(arena_main, game_memory, GAME_MEMORY_ALLOWANCE);
     GameData* gameData =  (GameData*)Memory::Allocate(arena_main, sizeof(GameData));
@@ -161,7 +160,16 @@ int main() {
     size_t IMAGE_ARENA_SIZE = sizeof(Image) * 1000;
     gameData->fps_buffer_count = 500;
     gameData->fps_buffer = (float*)Memory::Allocate(arena_main, sizeof(float) * gameData->fps_buffer_count);
-    
+
+    size_t INPUT_ARENA_SIZE = 0;
+    INPUT_ARENA_SIZE += sizeof(bool) * SDL_SCANCODE_COUNT * 2;
+    INPUT_ARENA_SIZE += sizeof(float) * SDL_SCANCODE_COUNT * 1;
+    gameData->arena_input = Memory::CreateSubArena(arena_main, INPUT_ARENA_SIZE);
+
+    gameData->input.keys_current = (bool*)Memory::Allocate(gameData->arena_input, sizeof(bool) * SDL_SCANCODE_COUNT);
+    gameData->input.keys_previous = (bool*)Memory::Allocate(gameData->arena_input, sizeof(bool) * SDL_SCANCODE_COUNT);
+    gameData->input.keys_held_time = (float*)Memory::Allocate(gameData->arena_input, sizeof(float) * SDL_SCANCODE_COUNT);
+
     gameData->arena_images = Memory::CreateSubArena(arena_main, IMAGE_ARENA_SIZE);
     gameData->arena_levels = Memory::CreateSubArena(arena_main, MEGABYTES(3));
     gameData->arena_entities = Memory::CreateSubArena(gameData->arena_levels, KILOBYTES(32));
@@ -173,10 +181,6 @@ int main() {
  
     gameData->levelCount = 500;
     gameData->levels = (LevelData*)Memory::Allocate(gameData->arena_levels, sizeof(LevelData) * gameData->levelCount);
-    gameData->input.keys_current = (bool*)Memory::Allocate(gameData->arena_levels, sizeof(bool) * SDL_SCANCODE_COUNT);
-    gameData->input.keys_previous = (bool*)Memory::Allocate(gameData->arena_levels, sizeof(bool) * SDL_SCANCODE_COUNT);
-    gameData->input.keys_held_time = (float*)Memory::Allocate(gameData->arena_levels, sizeof(float) * SDL_SCANCODE_COUNT);
-
     gameData->commandBuffer = (CommandBuffer*)Memory::Allocate(arena_main, sizeof(CommandBuffer));
     gameData->commandBuffer->capacity = 20000;
     size_t COMMAND_SIZE = sizeof(AnyCommand) * gameData->commandBuffer->capacity;

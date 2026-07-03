@@ -50,14 +50,13 @@ extern "C" {
 
   void Update(GameData* data,float dt){
 
-    const bool* keys = SDL_GetKeyboardState(nullptr);
     float undo_speed_up = std::lerp(1.0, 0.15, (data->commandBuffer->head - data->commandBuffer->index) * (1.0/30.0));
     if(undo_speed_up < 0.15){
       undo_speed_up = 0.15;
     }
-    if(KeyPressed(data->input, SDL_SCANCODE_Z) || KeyHeld_ForTime(data->input, SDL_SCANCODE_Z, UNDO_REPEAT_TIME * undo_speed_up)){
+    if(KeyPressed(&data->input, SDL_SCANCODE_Z) || KeyHeld_ForTime(&data->input, SDL_SCANCODE_Z, UNDO_REPEAT_TIME * undo_speed_up)){
       ResetKeyHeldTime(&data->input, SDL_SCANCODE_Z);
-      if(KeyHeld(data->input, SDL_SCANCODE_LSHIFT)){
+      if(KeyHeld(&data->input, SDL_SCANCODE_LSHIFT)){
         Redo(data->commandBuffer);
       }
       else{
@@ -65,20 +64,19 @@ extern "C" {
       }
     }
 
-
-    if(KeyPressed(data->input,SDL_SCANCODE_RIGHT) || KeyHeld_ForTime(data->input,SDL_SCANCODE_RIGHT, (1 / MOVE_SPEED) * 1.15)){
+    if(KeyPressed(&data->input,SDL_SCANCODE_RIGHT) || KeyHeld_ForTime(&data->input,SDL_SCANCODE_RIGHT, (1 / MOVE_SPEED) * 1.15)){
       ResetKeyHeldTime(&data->input, SDL_SCANCODE_RIGHT);
       data->input_buffer[data->input_buffer_write_count++ % data->input_buffer_capacity] = {1, 0};
     }
-    else if(KeyPressed(data->input,SDL_SCANCODE_LEFT) || KeyHeld_ForTime(data->input,SDL_SCANCODE_LEFT, (1 / MOVE_SPEED) * 1.15)){
+    else if(KeyPressed(&data->input,SDL_SCANCODE_LEFT) || KeyHeld_ForTime(&data->input,SDL_SCANCODE_LEFT, (1 / MOVE_SPEED) * 1.15)){
       ResetKeyHeldTime(&data->input, SDL_SCANCODE_LEFT);
       data->input_buffer[data->input_buffer_write_count++ % data->input_buffer_capacity] = {-1, 0};
     }
-    else if(KeyPressed(data->input,SDL_SCANCODE_UP) || KeyHeld_ForTime(data->input,SDL_SCANCODE_UP, (1 / MOVE_SPEED) * 1.15)){
+    else if(KeyPressed(&data->input,SDL_SCANCODE_UP) || KeyHeld_ForTime(&data->input,SDL_SCANCODE_UP, (1 / MOVE_SPEED) * 1.15)){
       ResetKeyHeldTime(&data->input, SDL_SCANCODE_UP);
       data->input_buffer[data->input_buffer_write_count++ % data->input_buffer_capacity] = {0, -1};
     }
-    else if(KeyPressed(data->input,SDL_SCANCODE_DOWN) || KeyHeld_ForTime(data->input,SDL_SCANCODE_DOWN, (1 / MOVE_SPEED) * 1.15)){
+    else if(KeyPressed(&data->input,SDL_SCANCODE_DOWN) || KeyHeld_ForTime(&data->input,SDL_SCANCODE_DOWN, (1 / MOVE_SPEED) * 1.15)){
       ResetKeyHeldTime(&data->input, SDL_SCANCODE_DOWN);
       data->input_buffer[data->input_buffer_write_count++ % data->input_buffer_capacity] = {0, 1};
     }
