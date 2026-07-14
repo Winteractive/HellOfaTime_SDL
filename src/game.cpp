@@ -9,25 +9,19 @@
 #include "gameState.h"
 #include "imgui/imgui.h"
 #include "input.h"
+#include "leveleditor.h"
 #include "levels.h"
-#include "image.h"
+#include "spriteLibrary.h"
 #include "levelRenderer.h"
 #include <cmath>
-
-
-
 
 extern "C" {
 
   void Initialize(GameData* data, SDL_Window* window, SDL_Renderer* renderer){
     
     DEV::Initialize(window, renderer);
+    AssetManagement::LoadAllSprites(data->spriteBuffer, renderer);
     data->imGui_context = ImGui::GetCurrentContext();
-    
-    data->ground = AssetManagement::LoadSprite(data->arena_images, renderer, "ground.png");
-    data->wall   = AssetManagement::LoadSprite(data->arena_images, renderer, "wall.png"); 
-    data->player = AssetManagement::LoadSprite(data->arena_images, renderer, "player.png");
-    data->box = AssetManagement::LoadSprite(data->arena_images, renderer, "box.png");
 
     data->currentLevelIndex = 1;
     CreateLevel(data->arena_levels, &data->levels[0], "assets/levels/testLevel.tmj");
@@ -50,6 +44,12 @@ extern "C" {
 
   void Update(GameData* data,float dt){
 
+    if(KeyPressed(&data->input, SDL_SCANCODE_F2)){
+      data->edit_level = !data->edit_level;
+    }
+    if(data->edit_level){
+      EDITOR::Update(&data->editorData, &data->input, data->GetCurrentLevel());
+    }
     float undo_speed_up = std::lerp(1.0, 0.15, (data->commandBuffer->head - data->commandBuffer->index) * (1.0/30.0));
     if(undo_speed_up < 0.15){
       undo_speed_up = 0.15;
@@ -115,6 +115,9 @@ extern "C" {
       }  
       data->input_buffer_read_count++;
     }
+
+    
+    
   }
  
   
@@ -154,7 +157,7 @@ extern "C" {
 
     return false;
   }
-    
+      
   void Draw(GameData* data, SDL_Renderer* renderer){
     DEV::PreDraw(data->imGui_context);
     SDL_SetRenderDrawColor(renderer, 120, 70, 120, 255);

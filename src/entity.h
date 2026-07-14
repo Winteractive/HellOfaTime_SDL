@@ -6,15 +6,26 @@ enum Behaviour : uint32_t {
   NONE = 0,
   CAN_MOVE = 1 << 0,
   IS_PLAYER = 1 << 1,
-  RESPOND_TO_INPUT = 1 << 2
+  RESPOND_TO_INPUT = 1 << 2,
+  IS_PETRIFIED = 1 << 3,
+};
+
+enum Direction{
+  RIGHT,
+  LEFT,
+  UP,
+  DOWN
 };
 
 enum class ID : uint8_t {
   NONE = 0,
   GROUND = 1,
   WALL = 2,
-  PLAYER = 3,
-  BOX = 4
+  DEMON = 3,
+  ROCK = 4,
+  MEDUSA = 5,
+  GHOST = 6,
+  GOLEM = 7,
 };
 
 struct Position{
@@ -24,6 +35,8 @@ struct Position{
 
 struct Entity{
   ID id;
+  Direction facing;
+  int strength;
   int x;
   int y;
   int x_prev;
@@ -41,10 +54,10 @@ struct Entity{
       default:
         SetBehaviour(NONE);
         break;
-      case ID::PLAYER:
+      case ID::DEMON:
         SetBehaviour((Behaviour)(CAN_MOVE | IS_PLAYER | RESPOND_TO_INPUT));
         break;
-      case ID::BOX:
+      case ID::ROCK:
         SetBehaviour((Behaviour)CAN_MOVE);
         break;
       }

@@ -7,16 +7,17 @@
 #include "imgui/imgui_impl_sdlrenderer3.h"
 #include "SDL3/SDL_render.h"
 #include "imgui/imgui_internal.h"
+#include "leveleditor.h"
 #include <string>
 
 using namespace std;
-
 
 void DEV::Initialize(SDL_Window* window, SDL_Renderer* renderer){
   ImGui::CreateContext();
   ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
   ImGui_ImplSDLRenderer3_Init(renderer);
-
+  ImGuiStyle* style = &ImGui::GetStyle();
+  style->ScaleAllSizes(2.0);
   ImGuiIO& io = ImGui::GetIO();
   int w, h;
   SDL_GetWindowSize(window, &w, &h);
@@ -43,8 +44,7 @@ void Draw_Imgui_Arena_Usage(Arena* arena, string name_of_arena){
 }
 
 void DrawFPS(GameData* data){
-  data->fps_buffer[data->fps_buffer_index] = 1.0 / *data->dt;
-  data->fps_buffer_index++;
+  data->fps_buffer[data->fps_buffer_index++] = 1.0 / *data->dt;
   data->fps_buffer_index %= data->fps_buffer_count;
   ImGui::PlotHistogram("fps", data->fps_buffer, data->fps_buffer_count,0,nullptr ,0,FPS, ImVec2(-1,35));
 }
@@ -65,7 +65,6 @@ void Draw_History(CommandBuffer* buffer){
 void DEV::Draw(GameData* data, SDL_Renderer* renderer){
   ImGui::Begin("Dev Tools");
   ImGui::Text("memory arena usage amount");
-
   
   Draw_Imgui_Arena_Usage(data->arena_main, "all memory");
   Draw_Imgui_Arena_Usage(data->arena_images, "images");
@@ -75,10 +74,14 @@ void DEV::Draw(GameData* data, SDL_Renderer* renderer){
   Draw_Imgui_Arena_Usage(data->arena_input, "input");
  
   Draw_History(data->commandBuffer);
-
   DrawFPS(data);
   
   ImGui::End();
+
+  if(data->edit_level){
+    EDITOR::DrawObjectPanel(&data->editorData, data->spriteBuffer);
+    EDITOR::DrawPreview(&data->editorData, &data->input, renderer, data->GetCurrentLevel(), &data->camera, data->spriteBuffer);
+   }
 
   ImGui::Render();
   ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer );

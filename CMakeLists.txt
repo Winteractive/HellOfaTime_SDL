@@ -26,7 +26,7 @@ set(EXE_EXCLUSIVE
 
 # Flag files that both our .EXE and .DLL need to know about 
 set(SHARED_SOURCES 
-    ${CMAKE_SOURCE_DIR}/src/image.cpp
+    # ${CMAKE_SOURCE_DIR}/src/image.cpp
     ${CMAKE_SOURCE_DIR}/src/arena.cpp
     ${CMAKE_SOURCE_DIR}/src/input.cpp
 )
@@ -52,7 +52,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     ${WINDOWS_LIBRARIES}
     ${SHARED_LIB_NAME}
 )
-
 
 # GAME DLL
 add_library(${DLL_NAME} SHARED ${DLL_EXCLUSIVE} ${IMGUI})

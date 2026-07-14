@@ -3,22 +3,16 @@
 #include "camera.h"
 #include "command.h"
 #include "entity.h"
-#include "image.h"
 #include "imgui/imgui_internal.h"
 #include "input.h"
+#include "leveleditor.h"
 #include "levels.h"
-
-enum class GAME_STATES {
-  PLAY,
-  BUILD
-};
+#include "spriteLibrary.h"
 
 struct GameData {
-  Image* fallback;
-  Image* wall;
-  Image* ground;
-  Image* player;
-  Image* box;
+
+  Sprite* spriteBuffer;
+
   Memory::Arena* arena_main;
   Memory::Arena* arena_levels;
   Memory::Arena* arena_entities;
@@ -28,12 +22,9 @@ struct GameData {
   CommandBuffer* commandBuffer;
 
   Camera camera;
-  GAME_STATES gameState;
-  Position cursor_position;
-  Entity* selected_entity;
+  bool edit_level;
+  Editor editorData;
   Input input;
-
-  
 
   ImGuiContext* imGui_context;
   const float* dt;  
@@ -55,4 +46,5 @@ struct GameData {
   LevelData* GetCurrentLevel(){
     return &levels[currentLevelIndex];
   }
+   
 };

@@ -10,7 +10,7 @@ void Memory::Initialize(Arena* arena, void* mem_start, size_t size) {
 }
 
 void* Memory::Allocate(Arena* arena, size_t size) {
-  assert(arena->used + size < arena->size);
+  assert(arena->used + size <= arena->size);
   void* front = arena->base + arena->used;
   arena->used += size;
   memset(front, 0, size);

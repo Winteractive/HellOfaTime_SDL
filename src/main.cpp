@@ -6,6 +6,7 @@
 
 #include "SDL3/SDL_init.h"
 #include "SDL3/SDL_keyboard.h"
+#include "SDL3/SDL_mouse.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_stdinc.h"
 #include "SDL3/SDL_timer.h"
@@ -15,6 +16,7 @@
 #include "arena.h"
 #include "gameState.h"
 #include "image.h"
+#include "input.h"
 
 SDL_Window* window;
 SDL_Renderer* renderer;
@@ -108,7 +110,7 @@ void SDL_Setup(){
     SDL_Init(SDL_INIT_EVENTS);
     SDL_SetLogPriorities(SDL_LOG_PRIORITY_VERBOSE);
 
-    window = SDL_CreateWindow("pilot", SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+    window = SDL_CreateWindow("hell of a time", SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     renderer = SDL_CreateRenderer(window, NULL);
 }
 
@@ -158,7 +160,11 @@ int main() {
     GameData* gameData =  (GameData*)Memory::Allocate(arena_main, sizeof(GameData));
     gameData->arena_main = arena_main;
 
-    size_t IMAGE_ARENA_SIZE = sizeof(Image) * 1000;
+    int SPRITE_COUNT = 256;
+    size_t IMAGE_ARENA_SIZE = sizeof(Sprite) * SPRITE_COUNT;
+    gameData->arena_images = Memory::CreateSubArena(arena_main, IMAGE_ARENA_SIZE);
+    gameData->spriteBuffer = (Sprite*)Memory::Allocate(gameData->arena_images, sizeof(Sprite) * SPRITE_COUNT); 
+
     gameData->fps_buffer_count = 500;
     gameData->fps_buffer = (float*)Memory::Allocate(arena_main, sizeof(float) * gameData->fps_buffer_count);
 
@@ -168,13 +174,13 @@ int main() {
     INPUT_ARENA_SIZE += 128;
     gameData->arena_input = Memory::CreateSubArena(arena_main, INPUT_ARENA_SIZE);
 
-    gameData->input.keys_current = (bool*)Memory::Allocate(gameData->arena_input, sizeof(bool) * SDL_SCANCODE_COUNT);
-    gameData->input.keys_previous = (bool*)Memory::Allocate(gameData->arena_input, sizeof(bool) * SDL_SCANCODE_COUNT);
+    gameData->input.keys_current   = (bool*)Memory::Allocate(gameData->arena_input, sizeof(bool) * SDL_SCANCODE_COUNT);
+    gameData->input.keys_previous  = (bool*)Memory::Allocate(gameData->arena_input, sizeof(bool) * SDL_SCANCODE_COUNT);
     gameData->input.keys_held_time = (float*)Memory::Allocate(gameData->arena_input, sizeof(float) * SDL_SCANCODE_COUNT);
+    gameData->input.mouse_held_time = (float*)Memory::Allocate(gameData->arena_input, sizeof(float) * (int)MouseButtons::COUNT);
 
-    gameData->arena_images = Memory::CreateSubArena(arena_main, IMAGE_ARENA_SIZE);
-    gameData->arena_levels = Memory::CreateSubArena(arena_main, MEGABYTES(3));
-    gameData->arena_entities = Memory::CreateSubArena(gameData->arena_levels, KILOBYTES(32));
+    gameData->arena_levels   = Memory::CreateSubArena(arena_main, MEGABYTES(3));
+    gameData->arena_entities = Memory::CreateSubArena(gameData->arena_levels, KILOBYTES(512));
     gameData->arena_commands = Memory::CreateSubArena(gameData->arena_levels, MEGABYTES(1));
 
     gameData->input_buffer_capacity = 50;
@@ -196,8 +202,6 @@ int main() {
     }    
 
     dll.initialize(gameData, window, renderer);
-
-    gameData->fallback = AssetManagement::LoadSprite(gameData->arena_images, renderer, "fallback.png");
   
     MMRESULT result = timeBeginPeriod(1);
     if(result == TIMERR_NOCANDO){
@@ -235,8 +239,12 @@ int main() {
         }
 
         gameData->input.keys_current = SDL_GetKeyboardState(nullptr);
+        gameData->input.mouse_current = SDL_GetMouseState(&gameData->input.mouse_x, &gameData->input.mouse_y);
+
         dll.update(gameData, dt);
+
         UpdateKeys(&gameData->input, dt);
+        UpdateMouse(&gameData->input, dt);
 
         dll.draw(gameData, renderer);
  
