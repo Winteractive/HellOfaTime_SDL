@@ -84,7 +84,7 @@ extern "C" {
     bool are_entities_moving = false;
     for (int i = 0; i < data->GetCurrentLevel()->entityCount; i++) {
       Entity* entity = &data->GetCurrentLevel()->entityBuffer[i];
-      if(entity->HasBehaviour(CAN_MOVE) && IsMoving(entity)){
+      if(HasBehaviour(entity ,CAN_MOVE) && IsMoving(entity)){
         entity->progress_01 += MOVE_SPEED * dt;
         if(entity->progress_01 >= 1){
           entity->progress_01 = 0;
@@ -107,10 +107,10 @@ extern "C" {
 
       for (int i = 0; i < data->GetCurrentLevel()->entityCount; i++) {
         Entity* entity = &data->GetCurrentLevel()->entityBuffer[i];
-        if(entity->HasBehaviour((Behaviour)(RESPOND_TO_INPUT | CAN_MOVE))){
+        if(HasBehaviour(entity ,(Behaviour)(RESPOND_TO_INPUT | CAN_MOVE))){
           int xDir = data->input_buffer[data->input_buffer_read_count % data->input_buffer_capacity].x;
           int yDir = data->input_buffer[data->input_buffer_read_count % data->input_buffer_capacity].y;
-          TryMove(entity, data->GetCurrentLevel(), data->commandBuffer, xDir, yDir, data->command_timestamp);
+          TryMove(entity, data->GetCurrentLevel(), data->commandBuffer, xDir, yDir, data->command_timestamp, entity->strength);
         }
       }  
       data->input_buffer_read_count++;
@@ -121,8 +121,12 @@ extern "C" {
   }
  
   
-  bool TryMove(Entity* mover, LevelData* level, CommandBuffer* cmd_buffer, int xDir, int yDir, int timestamp){
-    if(mover->HasBehaviour(CAN_MOVE) == false){
+  bool TryMove(Entity* mover, LevelData* level, CommandBuffer* cmd_buffer, int xDir, int yDir, int timestamp, int strength){
+    if(HasBehaviour(mover, CAN_MOVE) == false){
+      return false;
+    }
+
+    if(strength < 0){
       return false;
     }
 
@@ -143,8 +147,8 @@ extern "C" {
       return false;
     }
       
-    if(stepInto_entity->HasBehaviour(CAN_MOVE)){
-      if(TryMove(stepInto_entity, level, cmd_buffer, xDir, yDir, timestamp)){
+    if(HasBehaviour(stepInto_entity ,CAN_MOVE)){
+      if(TryMove(stepInto_entity, level, cmd_buffer, xDir, yDir, timestamp, --strength)){
         MoveCommand mv;
         mv.type = CMD_TYPE::MOVE;
         mv.entity = mover;

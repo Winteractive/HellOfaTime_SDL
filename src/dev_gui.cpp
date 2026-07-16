@@ -2,12 +2,9 @@
 #include "SDL3/SDL_video.h"
 #include "common.h"
 #include "gameState.h"
-#include "command.h"
-#include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdlrenderer3.h"
 #include "SDL3/SDL_render.h"
 #include "imgui/imgui_internal.h"
-#include "leveleditor.h"
 #include <string>
 
 using namespace std;

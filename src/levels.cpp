@@ -64,7 +64,7 @@ void AddEntity(ID entity_id, int x, int y, LevelData *level){
   entity->x_prev = x;
   entity->y_prev = y;
   entity->id = entity_id;
-  entity->InitializeBaseBehaviour();
+  InitializeBaseBehaviour(entity);
 }
 
 void RemoveEntity(int x, int y, LevelData* level){

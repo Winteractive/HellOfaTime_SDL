@@ -43,40 +43,11 @@ struct Entity{
   int y_prev;
   float progress_01;
   Behaviour behaviour;
-
-  bool HasBehaviour(Behaviour flags){
-    return (behaviour & flags) == flags;
-  }
-
-  void InitializeBaseBehaviour(){
-    assert(id != ID::NONE);
-    switch (id) {
-      default:
-        SetBehaviour(NONE);
-        break;
-      case ID::DEMON:
-        SetBehaviour((Behaviour)(CAN_MOVE | IS_PLAYER | RESPOND_TO_INPUT));
-        break;
-      case ID::ROCK:
-        SetBehaviour((Behaviour)CAN_MOVE);
-        break;
-      }
-  }
-
-  
-  void SetBehaviour(Behaviour flags){
-    behaviour = flags;
-  }
-
-  void AddBehaviour(Behaviour flags){
-    behaviour = (Behaviour)(behaviour | flags);
-  }
-
-  void RemoveBehaviour(Behaviour flags){
-    behaviour = (Behaviour)(behaviour & ~flags);
-  }
-    
 };
 
-bool IsMoving(Entity* e);
-
+bool IsMoving(Entity* entity);
+bool HasBehaviour(Entity* entity, Behaviour flags);
+void InitializeBaseBehaviour(Entity* entity);
+void SetBehaviour(Entity* entity, Behaviour flags);
+void AddBehaviour(Entity* entity, Behaviour flags);
+void RemoveBehaviour(Entity* entity, Behaviour flags);
