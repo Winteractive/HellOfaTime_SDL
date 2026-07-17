@@ -2,20 +2,33 @@
 #include <cassert>
 #include <cstdint>
 
+struct LevelData;
+struct CommandBuffer;
+
 enum Behaviour : uint32_t {
   NONE = 0,
   CAN_MOVE = 1 << 0,
   IS_PLAYER = 1 << 1,
   RESPOND_TO_INPUT = 1 << 2,
   IS_PETRIFIED = 1 << 3,
+  CAN_ROTATE = 1 << 4,
+  UNPUSHABLE = 1 << 5
 };
 
-enum Direction{
+enum class Direction {
   RIGHT,
   LEFT,
   UP,
   DOWN
 };
+
+inline Direction DirectionFromXY(int xDir, int yDir){
+  assert(xDir * yDir == 0);
+  if(xDir ==  1) { return Direction::RIGHT; }
+  if(xDir == -1) { return Direction::LEFT;  }
+  if(yDir ==  1) { return Direction::UP;    }
+  else           { return Direction::DOWN;  }
+}
 
 enum class ID : uint8_t {
   NONE = 0,
@@ -24,7 +37,7 @@ enum class ID : uint8_t {
   DEMON = 3,
   ROCK = 4,
   MEDUSA = 5,
-  GHOST = 6,
+  SIREN = 6,
   GOLEM = 7,
 };
 
@@ -51,3 +64,6 @@ void InitializeBaseBehaviour(Entity* entity);
 void SetBehaviour(Entity* entity, Behaviour flags);
 void AddBehaviour(Entity* entity, Behaviour flags);
 void RemoveBehaviour(Entity* entity, Behaviour flags);
+void PostMove(Entity* entity, LevelData* level, CommandBuffer* commandBuffer);
+void PostRotation(Entity* entity, LevelData* level, CommandBuffer* commandBuffer, Direction from, Direction to);
+void PreRotation(Entity* entity, LevelData* level,CommandBuffer* commandBuffer, Direction from, Direction to);

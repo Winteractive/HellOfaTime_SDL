@@ -46,7 +46,7 @@ void DrawFPS(GameData* data){
   ImGui::PlotHistogram("fps", data->fps_buffer, data->fps_buffer_count,0,nullptr ,0,FPS, ImVec2(-1,35));
 }
 
-void Draw_History(CommandBuffer* buffer){
+void Draw_History(CommandBuffer* buffer, LevelData* level){
   int sliderPos = buffer->index;
 
   if(ImGui::SliderInt("history",&sliderPos, 0, buffer->head)){
@@ -54,7 +54,7 @@ void Draw_History(CommandBuffer* buffer){
       Undo(buffer);
     }
     while(buffer->index < sliderPos){
-      Redo(buffer);
+      Redo(buffer, level);
     }
   }
 }
@@ -70,7 +70,7 @@ void DEV::Draw(GameData* data, SDL_Renderer* renderer){
   Draw_Imgui_Arena_Usage(data->arena_entities, "entities");
   Draw_Imgui_Arena_Usage(data->arena_input, "input");
  
-  Draw_History(data->commandBuffer);
+  Draw_History(data->commandBuffer, data->GetCurrentLevel());
   DrawFPS(data);
   
   ImGui::End();

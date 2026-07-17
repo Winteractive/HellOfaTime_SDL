@@ -9,6 +9,6 @@ extern "C" {
    __declspec(dllexport) void Draw(GameData* data, SDL_Renderer* renderer);
    __declspec(dllexport) void Update(GameData* data, float dt);
    __declspec(dllexport) void OnQuit(SDL_Renderer* renderer);
-   bool TryMove(Entity* mover, LevelData* level,  CommandBuffer* cmd_buffer, int xDir, int yDir, int timestamp, int strength);
+   bool TryMove(Entity* mover, LevelData* level,  CommandBuffer* cmd_buffer, int xDir, int yDir, int strength);
 }
 

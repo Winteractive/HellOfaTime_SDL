@@ -15,28 +15,40 @@ static const SpriteDataEntry all_sprite_data[] = {
 
 
 Sprite* GetSpriteFromID(ID id, Sprite* spriteBuffer){
+  Sprite* sprite_to_return = nullptr;
+  
  switch (id) {
  case ID::NONE:
-   return nullptr;
+   sprite_to_return = nullptr;
+   break;
  case ID::GROUND:
-   return &spriteBuffer[(int)SPRITE_ID::Ground];
+   sprite_to_return = &spriteBuffer[(int)SPRITE_ID::Ground];
+   break;
  case ID::WALL:
-   return &spriteBuffer[(int)SPRITE_ID::Wall];
+   sprite_to_return = &spriteBuffer[(int)SPRITE_ID::Wall];
+   break;
  case ID::DEMON:
-   return &spriteBuffer[(int)SPRITE_ID::Demon];
+   sprite_to_return = &spriteBuffer[(int)SPRITE_ID::Demon];
+   break;
  case ID::ROCK:
-   return &spriteBuffer[(int)SPRITE_ID::Rock];
+   sprite_to_return = &spriteBuffer[(int)SPRITE_ID::Rock];
+   break;
  case ID::MEDUSA:
-   return &spriteBuffer[(int)SPRITE_ID::Medusa];
- case ID::GHOST:
-   return &spriteBuffer[(int)SPRITE_ID::Ghost];
+   sprite_to_return = &spriteBuffer[(int)SPRITE_ID::Medusa];
+   break;
+ case ID::SIREN:
+   sprite_to_return = &spriteBuffer[(int)SPRITE_ID::Siren];
+   break;
  case ID::GOLEM:
-   return &spriteBuffer[(int)SPRITE_ID::Golem];
+   sprite_to_return = &spriteBuffer[(int)SPRITE_ID::Golem];
    break;
- default:
-    return &spriteBuffer[(int)SPRITE_ID::Fallback];
-   break;
- }
+  }
+
+  if(sprite_to_return == nullptr || sprite_to_return->texture == nullptr){
+    sprite_to_return = &spriteBuffer[(int)SPRITE_ID::Fallback];
+  }
+
+  return sprite_to_return;
 }
 
 namespace AssetManagement{

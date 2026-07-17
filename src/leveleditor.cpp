@@ -30,6 +30,16 @@ namespace EDITOR {
      editor->object_to_place_id = ID::MEDUSA;
     }
 
+    ImGui::SameLine();
+    if(ImGui::ImageButton("Siren", (ImTextureID)GetSpriteFromID(ID::SIREN, spriteBuffer)->texture, size)){
+     editor->object_to_place_id = ID::SIREN;
+    }
+    ImGui::SameLine();
+    
+    if(ImGui::ImageButton("Golem", (ImTextureID)GetSpriteFromID(ID::GOLEM, spriteBuffer)->texture, size)){
+     editor->object_to_place_id = ID::GOLEM;
+    }
+
     ImGui::End();
   }
 
