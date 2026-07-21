@@ -27,6 +27,7 @@ switch (entity->id) {
     break;
   case ID::MEDUSA:
     SetBehaviour(entity, (Behaviour)(CAN_ROTATE | CAN_MOVE | IS_PLAYER | RESPOND_TO_INPUT));
+    AddBehaviour(entity, Behaviour::JUMPS);
     entity->strength = 1;
     break;  
   case ID::SIREN:

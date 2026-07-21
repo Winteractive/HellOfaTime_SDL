@@ -107,6 +107,10 @@ extern "C" {
 
       for (int i = 0; i < data->GetCurrentLevel()->entityCount; i++) {
         Entity* entity = &data->GetCurrentLevel()->entityBuffer[i];
+        if(HasBehaviour(entity, Behaviour::IS_PUSHING)){
+          RemoveBehaviour(entity, Behaviour::IS_PUSHING);
+        }
+
         if(HasBehaviour(entity, (Behaviour)(RESPOND_TO_INPUT | CAN_MOVE))){
           if(HasBehaviour(entity, Behaviour::IS_PETRIFIED)){
             continue;
@@ -156,6 +160,7 @@ extern "C" {
     if(HasBehaviour(stepInto_entity, CAN_MOVE) && !HasBehaviour(stepInto_entity, UNPUSHABLE)){
       if(TryMove(stepInto_entity, level, cmd_buffer, xDir, yDir, --strength)){
         MoveCommand mv(mover, xDir, yDir);
+        AddBehaviour(mover, Behaviour::IS_PUSHING);
         Push(cmd_buffer, mv, level);
         return true;
       }
