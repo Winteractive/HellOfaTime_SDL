@@ -19,6 +19,7 @@ struct GameData {
   Memory::Arena* arena_images;
   Memory::Arena* arena_commands;
   Memory::Arena* arena_input;
+  Memory::Arena* arena_scratch;
   CommandBuffer* commandBuffer;
 
   Camera camera;

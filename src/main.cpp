@@ -14,6 +14,7 @@
 #include "command.h"
 #include "common.h"
 #include "arena.h"
+#include "entity.h"
 #include "gameState.h"
 #include "image.h"
 #include "input.h"
@@ -157,16 +158,18 @@ int main() {
 
     Memory::Arena* arena_main = new Memory::Arena();    
     Memory::Initialize(arena_main, game_memory, GAME_MEMORY_ALLOWANCE);
-    GameData* gameData =  (GameData*)Memory::Allocate(arena_main, sizeof(GameData));
+    GameData* gameData = ALLOC(arena_main, GameData);
     gameData->arena_main = arena_main;
 
     int SPRITE_COUNT = 256;
     size_t IMAGE_ARENA_SIZE = sizeof(Sprite) * SPRITE_COUNT;
     gameData->arena_images = Memory::CreateSubArena(arena_main, IMAGE_ARENA_SIZE);
-    gameData->spriteBuffer = (Sprite*)Memory::Allocate(gameData->arena_images, sizeof(Sprite) * SPRITE_COUNT); 
+    gameData->spriteBuffer = ALLOC_ARRAY(gameData->arena_images, Sprite, SPRITE_COUNT);
 
     gameData->fps_buffer_count = 500;
-    gameData->fps_buffer = (float*)Memory::Allocate(arena_main, sizeof(float) * gameData->fps_buffer_count);
+    gameData->fps_buffer = ALLOC_ARRAY(arena_main, float, gameData->fps_buffer_count);
+
+    gameData->arena_scratch = Memory::CreateSubArena(arena_main, KILOBYTES(256));
 
     size_t INPUT_ARENA_SIZE = 0;
     INPUT_ARENA_SIZE += sizeof(bool) * SDL_SCANCODE_COUNT * 2;
@@ -174,25 +177,23 @@ int main() {
     INPUT_ARENA_SIZE += 128;
     gameData->arena_input = Memory::CreateSubArena(arena_main, INPUT_ARENA_SIZE);
 
-    gameData->input.keys_current   = (bool*)Memory::Allocate(gameData->arena_input, sizeof(bool) * SDL_SCANCODE_COUNT);
-    gameData->input.keys_previous  = (bool*)Memory::Allocate(gameData->arena_input, sizeof(bool) * SDL_SCANCODE_COUNT);
-    gameData->input.keys_held_time = (float*)Memory::Allocate(gameData->arena_input, sizeof(float) * SDL_SCANCODE_COUNT);
-    gameData->input.mouse_held_time = (float*)Memory::Allocate(gameData->arena_input, sizeof(float) * (int)MouseButtons::COUNT);
+    gameData->input.keys_current = ALLOC_ARRAY(gameData->arena_input, bool, SDL_SCANCODE_COUNT);
+    gameData->input.keys_previous = ALLOC_ARRAY(gameData->arena_input, bool, SDL_SCANCODE_COUNT);
+    gameData->input.keys_held_time = ALLOC_ARRAY(gameData->arena_input, float, SDL_SCANCODE_COUNT);
+    gameData->input.mouse_held_time = ALLOC_ARRAY(gameData->arena_input, float, (int)MouseButtons::COUNT);
 
     gameData->arena_levels   = Memory::CreateSubArena(arena_main, MEGABYTES(3));
     gameData->arena_entities = Memory::CreateSubArena(gameData->arena_levels, KILOBYTES(512));
     gameData->arena_commands = Memory::CreateSubArena(gameData->arena_levels, MEGABYTES(1));
 
     gameData->input_buffer_capacity = 50;
-    size_t RING_BUFFER_SIZE = sizeof(Position) * gameData->input_buffer_capacity;
-    gameData->input_buffer = (Position*)Memory::Allocate(gameData->arena_levels, RING_BUFFER_SIZE);
+    gameData->input_buffer = ALLOC_ARRAY(gameData->arena_levels, Position, gameData->input_buffer_capacity);
  
     gameData->levelCount = 500;
-    gameData->levels = (LevelData*)Memory::Allocate(gameData->arena_levels, sizeof(LevelData) * gameData->levelCount);
-    gameData->commandBuffer = (CommandBuffer*)Memory::Allocate(arena_main, sizeof(CommandBuffer));
+    gameData->levels = ALLOC_ARRAY(gameData->arena_levels, LevelData, gameData->levelCount);
+    gameData->commandBuffer = ALLOC(arena_main, CommandBuffer);
     gameData->commandBuffer->capacity = 20000;
-    size_t COMMAND_SIZE = sizeof(AnyCommand) * gameData->commandBuffer->capacity;
-    gameData->commandBuffer->allCommands = (AnyCommand*)Memory::Allocate(gameData->arena_commands, COMMAND_SIZE);
+    gameData->commandBuffer->allCommands = ALLOC_ARRAY(gameData->arena_commands, AnyCommand, gameData->commandBuffer->capacity);
 
     DLL_INFO dll;
     bool dll_successfully_loaded = LoadDLL(&dll);
@@ -217,8 +218,10 @@ int main() {
     while(running){
 
         DLL_CheckStatus(&dll);        
+
+        Reset(gameData->arena_scratch);
         
-        CalculateDeltaTime(&dt);    
+        CalculateDeltaTime(&dt); 
 
         SDL_Event event;
         while(SDL_PollEvent(&event)){

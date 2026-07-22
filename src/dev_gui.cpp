@@ -69,6 +69,7 @@ void DEV::Draw(GameData* data, SDL_Renderer* renderer){
   Draw_Imgui_Arena_Usage(data->arena_commands, "commands");
   Draw_Imgui_Arena_Usage(data->arena_entities, "entities");
   Draw_Imgui_Arena_Usage(data->arena_input, "input");
+  Draw_Imgui_Arena_Usage(data->arena_scratch, "scratch");
  
   Draw_History(data->commandBuffer, data->GetCurrentLevel());
   DrawFPS(data);

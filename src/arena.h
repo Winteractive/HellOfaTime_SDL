@@ -1,7 +1,10 @@
 #pragma once
 
+#define ALLOC(arena, type) (type*)Memory::Allocate((arena), sizeof(type));
+#define ALLOC_ARRAY(arena, type, count) (type*)Memory::Allocate((arena), sizeof(type) * count);
+
 namespace Memory {
-  
+    
   struct Arena {
       unsigned char* base;
       size_t size;
