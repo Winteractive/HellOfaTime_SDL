@@ -4,7 +4,6 @@
 #include "levels.h"
 #include "arena.h"
 #include "Parsers/json.hpp"
-#include "camera.h"
 #include "entity.h"
 using namespace std;
 

@@ -48,7 +48,7 @@ extern "C" {
       data->edit_level = !data->edit_level;
     }
     if(data->edit_level){
-      EDITOR::Update(&data->editorData, &data->input, data->GetCurrentLevel());
+      EDITOR::Update(&data->editorData, &data->input, data->GetCurrentLevel(), data->commandBuffer);
     }
     float undo_speed_up = std::lerp(1.0, 0.15, (data->commandBuffer->head - data->commandBuffer->index) * (1.0/30.0));
     if(undo_speed_up < 0.15){
@@ -60,7 +60,7 @@ extern "C" {
         Redo(data->commandBuffer, data->GetCurrentLevel());
       }
       else{
-        Undo(data->commandBuffer);
+        Undo(data->commandBuffer, data->GetCurrentLevel());
       }
     }
 
