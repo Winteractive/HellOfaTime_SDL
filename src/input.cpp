@@ -1,6 +1,14 @@
 #include "input.h"
 #include "SDL3/SDL_mouse.h"
-#include <cstring>
+
+bool AnyKeyPressed(const Input *input){
+  for (int i = 0; i < SDL_SCANCODE_COUNT; i++) {
+    if(KeyPressed(input, (SDL_Scancode)i)){
+      return true;
+    }
+  }
+    return false;
+}
 
 bool KeyPressed(const Input* input, SDL_Scancode key){
   if(input->keys_previous == nullptr){

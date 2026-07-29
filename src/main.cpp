@@ -166,8 +166,8 @@ int main() {
     gameData->arena_images = Memory::CreateSubArena(arena_main, IMAGE_ARENA_SIZE);
     gameData->spriteBuffer = ALLOC_ARRAY(gameData->arena_images, Sprite, SPRITE_COUNT);
 
-    gameData->fps_buffer_count = 500;
-    gameData->fps_buffer = ALLOC_ARRAY(arena_main, float, gameData->fps_buffer_count);
+    gameData->editor_data.fps_buffer_count = 500;
+    gameData->editor_data.fps_buffer = ALLOC_ARRAY(arena_main, float, gameData->editor_data.fps_buffer_count);
 
     gameData->arena_scratch = Memory::CreateSubArena(arena_main, KILOBYTES(256));
 
@@ -186,14 +186,15 @@ int main() {
     gameData->arena_entities = Memory::CreateSubArena(gameData->arena_levels, KILOBYTES(512));
     gameData->arena_commands = Memory::CreateSubArena(gameData->arena_levels, MEGABYTES(1));
 
-    gameData->input_buffer_capacity = 50;
-    gameData->input_buffer = ALLOC_ARRAY(gameData->arena_levels, Position, gameData->input_buffer_capacity);
+    Gameplay* gameplay = &gameData->scenes.gameplay;
+    gameplay->input_buffer_capacity = 50;
+    gameplay->input_buffer = ALLOC_ARRAY(gameData->arena_levels, Position, gameplay->input_buffer_capacity);
  
-    gameData->levelCount = 500;
-    gameData->levels = ALLOC_ARRAY(gameData->arena_levels, LevelData, gameData->levelCount);
-    gameData->commandBuffer = ALLOC(arena_main, CommandBuffer);
-    gameData->commandBuffer->capacity = 20000;
-    gameData->commandBuffer->allCommands = ALLOC_ARRAY(gameData->arena_commands, AnyCommand, gameData->commandBuffer->capacity);
+    gameplay->levelCount = 500;
+    gameplay->levels = ALLOC_ARRAY(gameData->arena_levels, LevelData, gameplay->levelCount);
+    gameplay->commandBuffer = ALLOC(arena_main, CommandBuffer);
+    gameplay->commandBuffer->capacity = 20000;
+    gameplay->commandBuffer->allCommands = ALLOC_ARRAY(gameData->arena_commands, AnyCommand, gameplay->commandBuffer->capacity);
 
     DLL_INFO dll;
     bool dll_successfully_loaded = LoadDLL(&dll);

@@ -41,9 +41,10 @@ void Draw_Imgui_Arena_Usage(Arena* arena, string name_of_arena){
 }
 
 void DrawFPS(GameData* data){
-  data->fps_buffer[data->fps_buffer_index++] = 1.0 / *data->dt;
-  data->fps_buffer_index %= data->fps_buffer_count;
-  ImGui::PlotHistogram("fps", data->fps_buffer, data->fps_buffer_count,0,nullptr ,0,FPS, ImVec2(-1,35));
+  EditorData* editor = &data->editor_data;
+  editor->fps_buffer[editor->fps_buffer_index++] = 1.0 / *data->dt;
+  editor->fps_buffer_index %= editor->fps_buffer_count;
+  ImGui::PlotHistogram("fps", editor->fps_buffer, editor->fps_buffer_count,0,nullptr ,0,FPS, ImVec2(-1,35));
 }
 
 void Draw_History(CommandBuffer* buffer, LevelData* level){
@@ -71,14 +72,14 @@ void DEV::Draw(GameData* data, SDL_Renderer* renderer){
   Draw_Imgui_Arena_Usage(data->arena_input, "input");
   Draw_Imgui_Arena_Usage(data->arena_scratch, "scratch");
  
-  Draw_History(data->commandBuffer, data->GetCurrentLevel());
+  Draw_History(data->scenes.gameplay.commandBuffer, GetCurrentLevel(&data->scenes.gameplay));
   DrawFPS(data);
   
   ImGui::End();
 
-  if(data->edit_level){
-    EDITOR::DrawObjectPanel(&data->editorData, data->spriteBuffer);
-    EDITOR::DrawPreview(&data->editorData, &data->input, renderer, data->GetCurrentLevel(), &data->camera, data->spriteBuffer);
+  if(data->editor_data.edit_level){
+    EDITOR::DrawObjectPanel(&data->editor_data.editor, data->spriteBuffer);
+    EDITOR::DrawPreview(&data->editor_data.editor, &data->input, renderer, GetCurrentLevel(&data->scenes.gameplay), &data->camera, data->spriteBuffer);
    }
 
   ImGui::Render();
