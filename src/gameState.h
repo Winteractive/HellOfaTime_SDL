@@ -81,6 +81,7 @@ struct GameData {
   EditorData editor_data;
   Input input;
   Sprite* spriteBuffer;
+  Tileset* tilesetBuffer;
 
   Memory::Arena* arena_main;
   Memory::Arena* arena_levels;

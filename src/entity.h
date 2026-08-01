@@ -32,15 +32,12 @@ inline Direction DirectionFromXY(int xDir, int yDir){
   else           { return Direction::DOWN;  }
 }
 
-enum class ID : uint8_t {
-  NONE = 0,
-  GROUND = 1,
-  WALL = 2,
-  DEMON = 3,
-  ROCK = 4,
-  MEDUSA = 5,
-  SIREN = 6,
-  GOLEM = 7,
+enum class ENTITY_ID : uint8_t {
+  MEDUSA = 0,
+  DEMON = 1,
+  ROCK = 2,
+  SIREN = 3,
+  GOLEM = 4,
 };
 
 struct Position{
@@ -49,7 +46,8 @@ struct Position{
 };
 
 struct Entity{
-  ID id;
+  ENTITY_ID id;
+  bool active;
   Direction facing;
   int strength;
   int x;

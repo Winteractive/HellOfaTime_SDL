@@ -18,6 +18,7 @@
 #include "gameState.h"
 #include "image.h"
 #include "input.h"
+#include "spriteLibrary.h"
 
 SDL_Window* window;
 SDL_Renderer* renderer;
@@ -162,9 +163,10 @@ int main() {
     gameData->arena_main = arena_main;
 
     int SPRITE_COUNT = 256;
-    size_t IMAGE_ARENA_SIZE = sizeof(Sprite) * SPRITE_COUNT;
+    size_t IMAGE_ARENA_SIZE = MEGABYTES(1);
     gameData->arena_images = Memory::CreateSubArena(arena_main, IMAGE_ARENA_SIZE);
     gameData->spriteBuffer = ALLOC_ARRAY(gameData->arena_images, Sprite, SPRITE_COUNT);
+    gameData->tilesetBuffer = ALLOC_ARRAY(gameData->arena_images, Tileset, (int)TILESETS::COUNT);
 
     gameData->editor_data.fps_buffer_count = 500;
     gameData->editor_data.fps_buffer = ALLOC_ARRAY(arena_main, float, gameData->editor_data.fps_buffer_count);

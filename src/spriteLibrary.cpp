@@ -3,21 +3,22 @@
 #include "entity.h"
 #include <cassert>
 
+using namespace std;
+
+
 const char* FALLBACK_PATH = "assets/sprites/fallback.png";
 
 static const SpriteDataEntry all_sprite_data[] = {
   {SPRITE_ID::Fallback, FALLBACK_PATH,0,0},
-  {SPRITE_ID::Wall, "assets/sprites/wall.png", 0, 0},
   {SPRITE_ID::Demon, "assets/sprites/player.png"},
   {SPRITE_ID::Rock, "assets/sprites/rock.png", 10, 20},
-  {SPRITE_ID::Ground, "assets/sprites/ground.png", 0, 0},
-  {SPRITE_ID::Ground_alt, "assets/sprites/ground_alt.png",0,0},
   {SPRITE_ID::Medusa_Idle_Side, "assets/sprites/medusa_idle_side.png", 12, 24},
   {SPRITE_ID::Medusa_Idle_Front, "assets/sprites/medusa_idle_front.png", 12, 24},
   {SPRITE_ID::Medusa_Idle_Back, "assets/sprites/medusa_idle_back.png", 12, 24},
   {SPRITE_ID::Dropshadow, "assets/sprites/dropshadow.png", 8, 8},
   {SPRITE_ID::black_1x1, "assets/sprites/1x1_black.png",0,0},
-  {SPRITE_ID::titlescreen_background, "assets/sprites/titlescreen.png",0,0}
+  {SPRITE_ID::titlescreen_background, "assets/sprites/titlescreen.png",0,0},
+  {SPRITE_ID::dungeon_tileset, "assets/sprites/hell_of_a_time_dungeon_tileset.png",0,0, 9, 9}
 };
 
 Sprite* GetSprite_FromEntityState(Entity* entity, Sprite* spritebuffer){
@@ -26,7 +27,7 @@ Sprite* GetSprite_FromEntityState(Entity* entity, Sprite* spritebuffer){
   }
 
   switch (entity->id) {
-  case ID::MEDUSA:
+  case ENTITY_ID::MEDUSA:
     switch (entity->facing) {
     case Direction::RIGHT:
     case Direction::LEFT:
@@ -51,32 +52,23 @@ Sprite* GetSprite(SPRITE_ID sprite_id, Sprite* spriteBuffer){
   return &spriteBuffer[(int)sprite_id];
 }
 
-Sprite* GetSpriteFromID(ID id, Sprite* spriteBuffer){
+Sprite* GetSpriteFromID(ENTITY_ID id, Sprite* spriteBuffer){
   Sprite* sprite_to_return = nullptr;
   
  switch (id) {
- case ID::NONE:
-   sprite_to_return = nullptr;
-   break;
- case ID::GROUND:
-   sprite_to_return = &spriteBuffer[(int)SPRITE_ID::Ground];
-   break;
- case ID::WALL:
-   sprite_to_return = &spriteBuffer[(int)SPRITE_ID::Wall];
-   break;
- case ID::DEMON:
+ case ENTITY_ID::DEMON:
    sprite_to_return = &spriteBuffer[(int)SPRITE_ID::Demon];
    break;
- case ID::ROCK:
+ case ENTITY_ID::ROCK:
    sprite_to_return = &spriteBuffer[(int)SPRITE_ID::Rock];
    break;
- case ID::MEDUSA:
+ case ENTITY_ID::MEDUSA:
    sprite_to_return = nullptr;
    break;
- case ID::SIREN:
+ case ENTITY_ID::SIREN:
    sprite_to_return = &spriteBuffer[(int)SPRITE_ID::Siren];
    break;
- case ID::GOLEM:
+ case ENTITY_ID::GOLEM:
    sprite_to_return = &spriteBuffer[(int)SPRITE_ID::Golem];
    break;
   }
@@ -87,6 +79,8 @@ Sprite* GetSpriteFromID(ID id, Sprite* spriteBuffer){
 
   return sprite_to_return;
 }
+
+
 
 namespace AssetManagement{
   void LoadAllSprites(Sprite* spriteBuffer, SDL_Renderer *renderer){
@@ -114,6 +108,11 @@ namespace AssetManagement{
       sprite->pivot_x = entry.pivot_x;
       sprite->pivot_y = entry.pivot_y;
     }
+
+    sprite->tileset_cell_count_x = entry.tileset_cell_count_x;
+    sprite->tileset_cell_count_y = entry.tileset_cell_count_y;
+
+    
     SDL_DestroySurface(surface);
   }
 }

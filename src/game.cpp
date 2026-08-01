@@ -16,15 +16,16 @@
 #include "rendering.h"
 #include "spriteLibrary.h"
 #include "levelRenderer.h"
+#include "tilesetLibrary.h"
 #include <cmath>
 
 extern "C" {
 
-  void InitializeGame(Gameplay* gameplay, Arena* arena_levels){
+  void InitializeGame(Gameplay* gameplay, Arena* arena_levels, Tileset* tilesetBuffer){
     assert(gameplay->initialized == false);
-    gameplay->currentLevelIndex = 1;
-    CreateLevel(arena_levels, &gameplay->levels[0], "assets/levels/testLevel.tmj");
-    CreateLevel(arena_levels, &gameplay->levels[1], "assets/levels/testLevel_box.tmj");
+    gameplay->currentLevelIndex = 0;
+    CreateLevel(arena_levels, &gameplay->levels[0], &tilesetBuffer[(int)TILESETS::Dungeon], "assets/levels/testing.tmj");
+    // CreateLevel(arena_levels, &gameplay->levels[1], "assets/levels/testLevel_box.tmj");
     gameplay->initialized = true;
   }
 
@@ -32,9 +33,12 @@ extern "C" {
     DEV::Initialize(window, renderer);
     AssetManagement::LoadAllSprites(data->spriteBuffer, renderer);
     data->imGui_context = ImGui::GetCurrentContext();
+
+    AssetManagement::LoadAllTilesets(data->tilesetBuffer, data->arena_images);
+
     SDL_Texture* blackfade = GetSprite(SPRITE_ID::black_1x1, data->spriteBuffer)->texture;
     SDL_SetTextureBlendMode(blackfade, SDL_BLENDMODE_BLEND);
-    InitializeGame(&data->scenes.gameplay, data->arena_levels);
+    InitializeGame(&data->scenes.gameplay, data->arena_levels, data->tilesetBuffer);
     ChangeScene(data, SCENE_TYPES::TITLESCREEN);
   }
 
@@ -89,7 +93,6 @@ extern "C" {
   }
 
   void UpdateGame(Gameplay* gameplay, Input* input, const float dt){
-   
     float undo_speed_up = std::lerp(1.0, 0.15, (gameplay->commandBuffer->head - gameplay->commandBuffer->index) * (1.0/30.0));
     if(undo_speed_up < 0.15){
       undo_speed_up = 0.15;
@@ -241,9 +244,10 @@ extern "C" {
     int test_x = mover->x + xDir;
     int test_y = mover->y + yDir;
     Entity* stepInto_entity = GetEntity(level, test_x, test_y);
-    ID stepInto_tile_id = (ID)GetCellID(level, test_x, test_y);
+    uint16_t stepInto_tile_id = GetCellID(level, test_x, test_y);
     if(stepInto_entity == nullptr){
-      if(stepInto_tile_id == ID::GROUND){
+      if(IsWalkable(test_x, test_y, level)){
+      // if(stepInto_tile_id == ENITTY_ID::GROUND){
         MoveCommand mv(mover, xDir, yDir);
         Push(cmd_buffer, mv, level);
         return true;
