@@ -29,6 +29,8 @@ struct Gameplay {
   int input_buffer_write_count;
   int input_buffer_read_count;
   bool initialized;
+  int activePlayerIndex;
+  Entity** activePlayerBuffer;
 };
 
 struct MainMenu {
@@ -93,6 +95,7 @@ struct GameData {
   Camera camera;
   ImGuiContext* imGui_context;
   const float* dt;  
+  float* dt_scaler;
   
  };
 

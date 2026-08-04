@@ -1,6 +1,23 @@
 #include "entity.h"
 #include "command.h"
 #include "levels.h"
+#include "gameState.h"
+
+void SnapEntityToEndOfAction(Entity* entity){
+  entity->x_prev = entity->x;
+  entity->y_prev = entity->y;
+  entity->facing_previous = entity->facing_current;
+  entity->progress_01 = 0;
+  entity->action = Actions::NONE;}
+
+Entity* GetActiveEntity(Gameplay* gameplay){
+    return gameplay->activePlayerBuffer[gameplay->activePlayerIndex];
+}
+
+bool IsActing(Entity* e){
+    if(e->active == false) return false;
+    return e->action != Actions::NONE;
+}
 
 bool IsMoving(Entity* e){
     return e->x != e->x_prev || e->y != e->y_prev;
@@ -40,7 +57,6 @@ switch (entity->id) {
   }
 }
 
-
 void SetBehaviour(Entity* entity, Behaviour flags){
 entity->behaviour = flags;
 }
@@ -54,17 +70,19 @@ entity->behaviour = (Behaviour)(entity->behaviour & ~flags);
 }
 
 void PostMove(Entity *entity, LevelData* level, CommandBuffer* commandBuffer){
-    if(entity->id == ENTITY_ID::MEDUSA){
-        Entity* entity_looked_at = RaycastFirstEntity(entity->x, entity->y, entity->facing, level);
-        if(entity_looked_at != nullptr){
-            if(!HasBehaviour(entity_looked_at, Behaviour::IS_PETRIFIED)){
-                ModifyBehaviourCommand modify(entity_looked_at, Behaviour::IS_PETRIFIED, ModifyBehaviourCommand::ADD);
-                Push(commandBuffer, modify, level);
-            }
+    for (int i = 0; i < level->entityCount; i++) {
+        Entity* medusa = &level->entityBuffer[i];
+        if(medusa->id == ENTITY_ID::MEDUSA){
+        Entity* entity_looked_at = RaycastFirstEntity(medusa->x, medusa->y, medusa->facing_current, level);
+            if(entity_looked_at != nullptr){
+                if(!HasBehaviour(entity_looked_at, Behaviour::IS_PETRIFIED)){
+                    ModifyBehaviourCommand modify(entity_looked_at, Behaviour::IS_PETRIFIED, ModifyBehaviourCommand::ADD);
+                    Push(commandBuffer, modify, level);
+                }
+            }   
         }
     }
 }
-
 void PostRotation(Entity* entity, LevelData* level, CommandBuffer* commandBuffer, Direction from, Direction to){
     if(from == to){
         return;
@@ -79,8 +97,7 @@ void PostRotation(Entity* entity, LevelData* level, CommandBuffer* commandBuffer
         }
     }
 }
-    
-void PreRotation(Entity* entity, LevelData* level, CommandBuffer* commandBuffer, Direction from, Direction to){
+void PreRotation(Entity* entity, LevelData* level,CommandBuffer* commandBuffer, Direction from, Direction to){
     if(from == to){
         return;
     }

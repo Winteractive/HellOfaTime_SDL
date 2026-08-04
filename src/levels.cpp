@@ -101,6 +101,7 @@ void AddEntity(ENTITY_ID entity_id, int x, int y, LevelData *level){
   entity->x_prev = x;
   entity->y_prev = y;
   entity->id = entity_id;
+  entity->action = Actions::NONE;
   InitializeBaseBehaviour(entity);
 }
 

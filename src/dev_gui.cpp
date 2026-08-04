@@ -1,7 +1,9 @@
 #include "dev_gui.h"
 #include "SDL3/SDL_video.h"
+#include "command.h"
 #include "common.h"
 #include "gameState.h"
+#include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdlrenderer3.h"
 #include "SDL3/SDL_render.h"
 #include "imgui/imgui_internal.h"
@@ -42,20 +44,20 @@ void Draw_Imgui_Arena_Usage(Arena* arena, string name_of_arena){
 
 void DrawFPS(GameData* data){
   EditorData* editor = &data->editor_data;
-  editor->fps_buffer[editor->fps_buffer_index++] = 1.0 / *data->dt;
+  editor->fps_buffer[editor->fps_buffer_index++] = 1.0 / *data->dt * *data->dt_scaler;
   editor->fps_buffer_index %= editor->fps_buffer_count;
   ImGui::PlotHistogram("fps", editor->fps_buffer, editor->fps_buffer_count,0,nullptr ,0,FPS, ImVec2(-1,35));
 }
 
-void Draw_History(CommandBuffer* buffer, LevelData* level){
-  int sliderPos = buffer->index;
+void Draw_History(LevelData* level, CommandBuffer* commandBuffer){
+  int sliderPos = commandBuffer->index;
 
-  if(ImGui::SliderInt("history",&sliderPos, 0, buffer->head)){
-    while(buffer->index > sliderPos){
-      Undo(buffer, level);
+  if(ImGui::SliderInt("history",&sliderPos, 0, commandBuffer->head)){
+    while(commandBuffer->index > sliderPos){
+      Undo(commandBuffer, level);
     }
-    while(buffer->index < sliderPos){
-      Redo(buffer, level);
+    while(commandBuffer->index < sliderPos){
+      Redo(commandBuffer, level);
     }
   }
 }
@@ -72,8 +74,10 @@ void DEV::Draw(GameData* data, SDL_Renderer* renderer){
   Draw_Imgui_Arena_Usage(data->arena_input, "input");
   Draw_Imgui_Arena_Usage(data->arena_scratch, "scratch");
  
-  Draw_History(data->scenes.gameplay.commandBuffer, GetCurrentLevel(&data->scenes.gameplay));
+  Draw_History(GetCurrentLevel(&data->scenes.gameplay), data->scenes.gameplay.commandBuffer);
   DrawFPS(data);
+
+  ImGui::SliderFloat("deltaTimeScaler", data->dt_scaler, 0.1, 3);  
   
   ImGui::End();
 

@@ -4,6 +4,7 @@
 
 struct LevelData;
 struct CommandBuffer;
+struct Gameplay;
 
 enum Behaviour : uint32_t {
   NONE = 0,
@@ -15,6 +16,12 @@ enum Behaviour : uint32_t {
   UNPUSHABLE = 1 << 5,
   JUMPS = 1 << 6,
   IS_PUSHING = 1 << 7
+};
+
+enum class Actions {
+  NONE = 0,
+  MOVING = 1,
+  ROTATING = 2
 };
 
 enum class Direction {
@@ -46,9 +53,11 @@ struct Position{
 };
 
 struct Entity{
+  Actions action;
   ENTITY_ID id;
   bool active;
-  Direction facing;
+  Direction facing_current;
+  Direction facing_previous;
   int strength;
   int x;
   int y;
@@ -58,6 +67,7 @@ struct Entity{
   Behaviour behaviour;
 };
 
+Entity* GetActiveEntity(Gameplay* gameplay);
 bool IsMoving(Entity* entity);
 bool HasBehaviour(Entity* entity, Behaviour flags);
 void InitializeBaseBehaviour(Entity* entity);
@@ -67,3 +77,5 @@ void RemoveBehaviour(Entity* entity, Behaviour flags);
 void PostMove(Entity* entity, LevelData* level, CommandBuffer* commandBuffer);
 void PostRotation(Entity* entity, LevelData* level, CommandBuffer* commandBuffer, Direction from, Direction to);
 void PreRotation(Entity* entity, LevelData* level,CommandBuffer* commandBuffer, Direction from, Direction to);
+bool IsActing(Entity* e);
+// void SnapEntityToEndOfAction(Entity* entity);

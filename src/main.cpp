@@ -116,10 +116,11 @@ void SDL_Setup(){
     renderer = SDL_CreateRenderer(window, NULL);
 }
 
-void CalculateDeltaTime(float* dt){
+void CalculateDeltaTime(float* dt, float scaler){
     NOW = SDL_GetTicksNS();
     *dt = NOW - PREV;
     *dt = SDL_NS_TO_SECONDS(*dt);
+    *dt *= scaler;
     PREV = NOW;
 }
 
@@ -216,15 +217,16 @@ int main() {
     
     bool running = true;
     float dt;
+    float dt_scaler = 1;
     gameData->dt = &dt;
-
+    gameData->dt_scaler = &dt_scaler;
     while(running){
 
         DLL_CheckStatus(&dll);        
 
         Reset(gameData->arena_scratch);
         
-        CalculateDeltaTime(&dt); 
+        CalculateDeltaTime(&dt,  dt_scaler); 
 
         SDL_Event event;
         while(SDL_PollEvent(&event)){

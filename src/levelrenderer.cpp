@@ -11,10 +11,10 @@ void RenderLevel(GameData* gameData, SDL_Renderer* renderer){
   Gameplay* gameplay = &gameData->scenes.gameplay;
   LevelData* level = &gameplay->levels[gameplay->currentLevelIndex];
 
-  Sprite* tileset;
+  Sprite* sprite;
   switch(level->tileset->type){
     case TILESETS::Dungeon:
-      tileset = GetSprite(SPRITE_ID::dungeon_tileset, gameData->spriteBuffer);
+      sprite = GetSprite(SPRITE_ID::dungeon_tileset, gameData->spriteBuffer);
       break;
     case TILESETS::NONE:
     case TILESETS::COUNT:
@@ -25,7 +25,7 @@ void RenderLevel(GameData* gameData, SDL_Renderer* renderer){
   for(int x = 0; x < level->w; x++){
     for (int y = 0 ; y < level->h; y++) {
       uint16_t id = GetCellID(level, x, y);
-      RenderTile_World(tileset, id, level, renderer, &gameData->camera, x, y, 1, 1);
+      RenderTile(sprite, id, level, renderer, &gameData->camera, x, y, 1, 1);
     }
   }
 }
@@ -43,25 +43,33 @@ void RenderEntities(GameData* data, SDL_Renderer* renderer){
   }
 
   std::sort(SortedEntities, SortedEntities + lvl->entityCount, IsEntityBelowOtherEntity);
+
+  Gameplay* gameplay = &data->scenes.gameplay;
+  Entity* activeEntity = gameplay->activePlayerBuffer[gameplay->activePlayerIndex];
+  
   for (int i = 0; i < lvl->entityCount; i++) {
     Entity* entity = SortedEntities[i];
     if(entity->active == false){
       continue;
     }
-    Sprite* sprite = GetSprite_FromEntityState(entity, data->spriteBuffer);
+    SpriteRenderInfo sprite = GetSprite_FromEntityState(entity, data->spriteBuffer);
     if(HasBehaviour(entity, Behaviour::IS_PETRIFIED)){
-      sprite = GetSpriteFromID(ENTITY_ID::ROCK, data->spriteBuffer);
+      sprite = GetSprite(SPRITE_ID::Rock, data->spriteBuffer);
     }
     float x_animated = std::lerp(entity->x_prev, entity->x, entity->progress_01);
     float y_animated = std::lerp(entity->y_prev, entity->y, entity->progress_01);
-    float dropshadow_y = y_animated;
-    if(HasBehaviour(entity, Behaviour::JUMPS) && !HasBehaviour(entity, Behaviour::IS_PUSHING)){
+    float ground_y = y_animated;
+    if(entity->action == Actions::MOVING && HasBehaviour(entity, Behaviour::JUMPS) && !HasBehaviour(entity, Behaviour::IS_PUSHING)){
      y_animated -= 0.5 * sinf(entity->progress_01 * 3.14);
     }
 
     Sprite* dropshadow = &data->spriteBuffer[(int)SPRITE_ID::Dropshadow];
 
-    RenderEntity_OnTile(dropshadow, lvl, renderer, &data->camera, x_animated, dropshadow_y, 1, 0.4, false);
-    RenderEntity_OnTile(sprite, lvl, renderer, &data->camera, x_animated, y_animated, 1, 1, entity->facing == Direction::RIGHT);
+    RenderSprite_OnTile(dropshadow, lvl, renderer, &data->camera, x_animated, ground_y, 1, 0.4, false);
+    if(entity == activeEntity){
+      SpriteRenderInfo selection_marker = GetSprite(SPRITE_ID::selection_marker, data->spriteBuffer);  
+      RenderSprite_OnTile(selection_marker, lvl, renderer, &data->camera, x_animated, ground_y);
+    }
+    RenderSprite_OnTile(sprite, lvl, renderer, &data->camera, x_animated, y_animated, 1, 1, false);
   }        
 }

@@ -39,7 +39,7 @@ extern "C" {
     SDL_Texture* blackfade = GetSprite(SPRITE_ID::black_1x1, data->spriteBuffer)->texture;
     SDL_SetTextureBlendMode(blackfade, SDL_BLENDMODE_BLEND);
     InitializeGame(&data->scenes.gameplay, data->arena_levels, data->tilesetBuffer);
-    ChangeScene(data, SCENE_TYPES::TITLESCREEN);
+    ChangeScene(data, SCENE_TYPES::GAME);
   }
 
   
@@ -47,6 +47,7 @@ extern "C" {
   void StartLevel(Gameplay* gameplay, Arena* arena_commands, Arena* arena_entities){
     Reset(arena_commands);
     CreateEntities(&gameplay->levels[gameplay->currentLevelIndex], arena_entities);
+    gameplay->activePlayerIndex = 0;
   }
     
   void ChangeScene(GameData* data, SCENE_TYPES new_scene){
@@ -92,7 +93,7 @@ extern "C" {
   void UpdateTitlescreen(TitleScreen* titlescreen, const float dt){
   }
 
-  void UpdateGame(Gameplay* gameplay, Input* input, const float dt){
+  void UpdateGame(Gameplay* gameplay, Input* input, Arena* arena_scratch, const float dt){
     float undo_speed_up = std::lerp(1.0, 0.15, (gameplay->commandBuffer->head - gameplay->commandBuffer->index) * (1.0/30.0));
     if(undo_speed_up < 0.15){
       undo_speed_up = 0.15;
@@ -106,7 +107,6 @@ extern "C" {
         Undo(gameplay->commandBuffer, GetCurrentLevel(gameplay));
       }
     }
-
    
     if(KeyPressed(input,SDL_SCANCODE_RIGHT) || KeyHeld_ForTime(input,SDL_SCANCODE_RIGHT, (1 / MOVE_SPEED) * 1.15)){
       ResetKeyHeldTime(input, SDL_SCANCODE_RIGHT);
@@ -125,55 +125,107 @@ extern "C" {
       gameplay->input_buffer[gameplay->input_buffer_write_count++ % gameplay->input_buffer_capacity] = {0, 1};
     }
     
-    bool are_entities_moving = false;
-    for (int i = 0; i < GetCurrentLevel(gameplay)->entityCount; i++) {
-      Entity* entity = &GetCurrentLevel(gameplay)->entityBuffer[i];
-      if(HasBehaviour(entity ,CAN_MOVE) && IsMoving(entity)){
-        entity->progress_01 += MOVE_SPEED * dt;
-        if(entity->progress_01 >= 1){
-          entity->progress_01 = 0;
-          entity->x_prev = entity->x;
-          entity->y_prev = entity->y;
-        }
-        if(IsMoving(entity)){
-          are_entities_moving = true;
-        }
+    
+    bool are_entities_acting = false;
+    LevelData *level = GetCurrentLevel(gameplay);
+    Entity* entityBuffer = level->entityBuffer;
+
+    for (int i = 0; i < level->entityCount; i++){
+      if(IsActing(&entityBuffer[i])){
+        are_entities_acting = true;
+        break;
       }
     }
 
-    
-    if(are_entities_moving == false){
-      if(gameplay->input_buffer_read_count == gameplay->input_buffer_write_count){
-        return;
+    for (int i = 0; i < level->entityCount; i++){
+      Entity* entity = &entityBuffer[i];
+      if(!entity->active) continue;
+        switch(entity->action){
+        case Actions::NONE:
+          continue;
+        case Actions::MOVING:
+          entity->progress_01 += MOVE_SPEED * dt;
+            break;
+        case Actions::ROTATING:
+          entity->progress_01 += 8 * dt;
+          break;
       }
-
-      gameplay->commandBuffer->timestamp += 1;
-
-      for (int i = 0; i < GetCurrentLevel(gameplay)->entityCount; i++) {
-        Entity* entity = &GetCurrentLevel(gameplay)->entityBuffer[i];
+    }
+    for (int i = 0; i < level->entityCount; i++){
+      Entity* entity = &entityBuffer[i];
+      if(entity->progress_01 >= 1){
+        entity->x_prev = entity->x;
+        entity->y_prev = entity->y;
+        entity->facing_previous = entity->facing_current;
+        entity->action = Actions::NONE;
+        entity->progress_01 = 0;
         if(HasBehaviour(entity, Behaviour::IS_PUSHING)){
           RemoveBehaviour(entity, Behaviour::IS_PUSHING);
         }
+      }
+    }
+    
+    int player_count = 0;
+    for (int i = 0; i < level->entityCount; i++) {
+      if(entityBuffer[i].active == false){
+        continue;
+      }
+      if(HasBehaviour(&level->entityBuffer[i], (Behaviour)(IS_PLAYER))){
+        player_count++;
+      }
+    }
 
-        if(HasBehaviour(entity, (Behaviour)(RESPOND_TO_INPUT | CAN_MOVE))){
-          if(HasBehaviour(entity, Behaviour::IS_PETRIFIED)){
-            continue;
-          }
-          int xDir = gameplay->input_buffer[gameplay->input_buffer_read_count % gameplay->input_buffer_capacity].x;
-          int yDir = gameplay->input_buffer[gameplay->input_buffer_read_count % gameplay->input_buffer_capacity].y;
+    int index = 0;
+    gameplay->activePlayerBuffer = ALLOC_ARRAY(arena_scratch, Entity*, player_count);
+    for (int i = 0; i < level->entityCount; i++) {
+      if(entityBuffer[i].active == false){
+        continue;
+      }
+      if(HasBehaviour(&level->entityBuffer[i], (Behaviour)(IS_PLAYER))){
+        gameplay->activePlayerBuffer[index++] = &level->entityBuffer[i];
+      }
+    }
 
-          Direction new_facing = DirectionFromXY(xDir, yDir);
-          if(new_facing != entity->facing){ 
-            RotateCommand rotate(entity, entity->facing, new_facing);
-            Push(gameplay->commandBuffer, rotate, GetCurrentLevel(gameplay));
-          }
+    if(are_entities_acting == false && KeyPressed(input, SDL_SCANCODE_X) && player_count > 0){
+      SwapActiveEntityCommand swap(&gameplay->activePlayerIndex, player_count);
+      Push(gameplay->commandBuffer, swap, GetCurrentLevel(gameplay));
+      gameplay->commandBuffer->timestamp += 1;
+    }
+        
+    if(are_entities_acting){
+      return;
+    }
+    if(gameplay->input_buffer_read_count == gameplay->input_buffer_write_count){
+      return;
+    }
 
-          TryMove(entity, GetCurrentLevel(gameplay), gameplay->commandBuffer, xDir, yDir, entity->strength);
-        }
-      }  
+    Entity* entity = GetActiveEntity(gameplay);
+    
+    if(!HasBehaviour(entity, (Behaviour)(RESPOND_TO_INPUT | CAN_MOVE))){
+      return;
+    }
+    
+    if(HasBehaviour(entity, Behaviour::IS_PETRIFIED)){
+      return;
+    }
+    int xDir = gameplay->input_buffer[gameplay->input_buffer_read_count % gameplay->input_buffer_capacity].x;
+    int yDir = gameplay->input_buffer[gameplay->input_buffer_read_count % gameplay->input_buffer_capacity].y;
+
+    Direction new_facing = DirectionFromXY(xDir, yDir);
+    if(new_facing != entity->facing_current){ 
+      RotateCommand rotate(entity, entity->facing_current, new_facing);
+      Push(gameplay->commandBuffer, rotate, level);
+      return;
+    }
+
+    if(!IsActing(entity)){
+      TryMove(entity, level, gameplay->commandBuffer, xDir, yDir, entity->strength);
+      gameplay->commandBuffer->timestamp += 1;
       gameplay->input_buffer_read_count++;
     }
-  }
+  }  
+    
+  
 
   void Update(GameData* data,float dt){
     TitleScreen* titlescreen = &data->scenes.titlescreen;
@@ -221,7 +273,7 @@ extern "C" {
     case SCENE_TYPES::MAINMENU:
       break;
     case SCENE_TYPES::GAME:
-      UpdateGame(gameplay, &data->input, dt);
+      UpdateGame(gameplay, &data->input, data->arena_scratch, dt);
       break;
     case SCENE_TYPES::CREDITS:
       break;
@@ -232,7 +284,7 @@ extern "C" {
   }
  
   
-  bool TryMove(Entity* mover, LevelData* level, CommandBuffer* cmd_buffer, int xDir, int yDir, int strength){
+  bool TryMove(Entity* mover, LevelData* level,CommandBuffer* commandBuffer, int xDir, int yDir, int strength){
     if(HasBehaviour(mover, CAN_MOVE) == false){
       return false;
     }
@@ -247,19 +299,18 @@ extern "C" {
     uint16_t stepInto_tile_id = GetCellID(level, test_x, test_y);
     if(stepInto_entity == nullptr){
       if(IsWalkable(test_x, test_y, level)){
-      // if(stepInto_tile_id == ENITTY_ID::GROUND){
         MoveCommand mv(mover, xDir, yDir);
-        Push(cmd_buffer, mv, level);
+        Push(commandBuffer, mv, level);
         return true;
       }
       return false;
     }
       
     if(HasBehaviour(stepInto_entity, CAN_MOVE) && !HasBehaviour(stepInto_entity, UNPUSHABLE)){
-      if(TryMove(stepInto_entity, level, cmd_buffer, xDir, yDir, --strength)){
+      if(TryMove(stepInto_entity, level,commandBuffer, xDir, yDir, --strength)){
         MoveCommand mv(mover, xDir, yDir);
         AddBehaviour(mover, Behaviour::IS_PUSHING);
-        Push(cmd_buffer, mv, level);
+        Push(commandBuffer, mv, level);
         return true;
       }
     }
