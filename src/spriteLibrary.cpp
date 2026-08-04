@@ -95,9 +95,6 @@ SpriteRenderInfo GetSprite_FromEntityState(Entity* entity, Sprite* spritebuffer)
   default:
     return GetSprite(SPRITE_ID::Fallback, spritebuffer);
   }  
-
-  assert(false);
-  return nullptr;
 }
 
 Sprite* GetSprite(SPRITE_ID sprite_id, Sprite* spriteBuffer){
