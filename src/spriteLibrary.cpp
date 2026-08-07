@@ -17,7 +17,7 @@ static const SpriteDataEntry all_sprite_data[] = {
   {SPRITE_ID::Medusa_Rotate, "assets/sprites/medusa_rotate.png", 12, 24, 8, 1},
   {SPRITE_ID::Dropshadow, "assets/sprites/dropshadow.png", 8, 8},
   {SPRITE_ID::black_1x1, "assets/sprites/1x1_black.png",0,0},
-  {SPRITE_ID::titlescreen_background, "assets/sprites/titlescreen.png",0,0},
+  {SPRITE_ID::titlescreen_background, "assets/sprites/titlescreen.png"},
   {SPRITE_ID::selection_marker, "assets/sprites/selection_marker.png",9,9},
   {SPRITE_ID::dungeon_tileset, "assets/sprites/hell_of_a_time_dungeon_tileset.png",0,0, 9, 9}
 };

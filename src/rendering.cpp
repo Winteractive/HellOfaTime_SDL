@@ -1,9 +1,13 @@
 #include "rendering.h"
+#include "SDL3/SDL_blendmode.h"
+#include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_surface.h"
 #include "camera.h"
 #include "common.h"
 #include "spriteLibrary.h"
+#include <cstddef>
+#include <cstdint>
 
 
 void RenderSprite_World(SpriteRenderInfo spriteRenderInfo, SDL_Renderer* renderer, const Camera* camera, float x, float y, float scale, float alpha, bool flipped){
@@ -28,12 +32,15 @@ void RenderSprite_World(SpriteRenderInfo spriteRenderInfo, SDL_Renderer* rendere
   rect.x = x;
   rect.y = y;
   float final_scale = UPSCALE_FACTOR * scale; 
-  rect.h = tilesetRect.w * final_scale;
-  rect.w = tilesetRect.h * final_scale;
+  rect.w = tilesetRect.w * final_scale;
+  rect.h = tilesetRect.h * final_scale;
   rect.x -= sprite->pivot_x * final_scale;
   rect.y -= sprite->pivot_y * final_scale;
+
+  if(camera != NULL){
   rect.x -= camera->camera_x;
   rect.y -= camera->camera_y;
+  }
   
   SDL_SetTextureScaleMode(sprite->texture, SDL_SCALEMODE_PIXELART);
   SDL_SetTextureAlphaModFloat(sprite->texture, alpha);
@@ -51,4 +58,12 @@ void RenderSprite_OnTile(SpriteRenderInfo spriteInfo, LevelData* level, SDL_Rend
   x += TILE_SIZE_PX_SCALED / 2.0;
   y += TILE_SIZE_PX_SCALED / 2.0;
   RenderSprite_World(spriteInfo,renderer, camera, x, y, scale, alpha, flipped);
+}
+void RenderButton(Button* button, bool is_selected, SDL_Renderer* renderer){
+  SDL_Texture* texture =button->texture;
+  SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_PIXELART);
+  uint8_t colorOverlay = is_selected ? 255: 230;
+  SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+  SDL_SetTextureColorMod(texture, colorOverlay, colorOverlay, colorOverlay);
+  SDL_RenderTexture(renderer, button->texture, NULL, &button->rect);
 }

@@ -1,3 +1,4 @@
+#include <cmath>
 #include <cstddef>
 #include <windows.h>
 #include <fileapi.h>
@@ -214,13 +215,13 @@ int main() {
         Sleep(2000);
         return 3;
     }
-    
-    bool running = true;
+
+    gameData->running = true;
     float dt;
     float dt_scaler = 1;
     gameData->dt = &dt;
     gameData->dt_scaler = &dt_scaler;
-    while(running){
+    while(gameData->running){
 
         DLL_CheckStatus(&dll);        
 
@@ -231,8 +232,8 @@ int main() {
         SDL_Event event;
         while(SDL_PollEvent(&event)){
 
-            running = dll.handleEvents(gameData, event);
-            if(running == false){
+            gameData->running = dll.handleEvents(gameData, event);
+            if(gameData->running == false){
                 break;
             }
 
@@ -247,7 +248,18 @@ int main() {
         }
 
         gameData->input.keys_current = SDL_GetKeyboardState(nullptr);
+        float* delta_x = &gameData->input.mouse_x_delta;
+        float* delta_y = &gameData->input.mouse_y_delta;
+        *delta_x = gameData->input.mouse_x; // store last frames value
+        *delta_y = gameData->input.mouse_y; // store last frames value
         gameData->input.mouse_current = SDL_GetMouseState(&gameData->input.mouse_x, &gameData->input.mouse_y);
+        *delta_x = gameData->input.mouse_x - *delta_x;
+        *delta_y = gameData->input.mouse_y - *delta_y;
+        float dx = *delta_x;
+        float dy = *delta_y;
+        gameData->input.mouse_magnitude = std::sqrt(dx * dx + dy * dy);
+        // printf("x: %.4f y: %.4f \n", *delta_x, *delta_y);
+        // printf("%.4f \n", gameData->input.mouse_magnitude);
 
         dll.update(gameData, dt);
 

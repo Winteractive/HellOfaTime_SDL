@@ -7,6 +7,7 @@
 #include "input.h"
 #include "leveleditor.h"
 #include "levels.h"
+#include "mainmenu.h"
 #include "spriteLibrary.h"
 
 
@@ -33,15 +34,6 @@ struct Gameplay {
   Entity** activePlayerBuffer;
 };
 
-struct MainMenu {
-  enum Buttons {
-    Play = 0,
-    Exit = 1,
-    Count = 2
-  };
-  int button_index;
-};
-
 struct Transition {
   enum States {
     Inactive,
@@ -54,6 +46,7 @@ struct Transition {
 };
 
 struct TitleScreen {
+  Sprite* background;
 };
 
 struct Credits {
@@ -85,6 +78,7 @@ struct GameData {
   Sprite* spriteBuffer;
   Tileset* tilesetBuffer;
 
+  bool running;
   Memory::Arena* arena_main;
   Memory::Arena* arena_levels;
   Memory::Arena* arena_entities;

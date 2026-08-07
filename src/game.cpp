@@ -13,6 +13,7 @@
 #include "input.h"
 #include "leveleditor.h"
 #include "levels.h"
+#include "mainmenu.h"
 #include "rendering.h"
 #include "spriteLibrary.h"
 #include "levelRenderer.h"
@@ -25,7 +26,6 @@ extern "C" {
     assert(gameplay->initialized == false);
     gameplay->currentLevelIndex = 0;
     CreateLevel(arena_levels, &gameplay->levels[0], &tilesetBuffer[(int)TILESETS::Dungeon], "assets/levels/testing.tmj");
-    // CreateLevel(arena_levels, &gameplay->levels[1], "assets/levels/testLevel_box.tmj");
     gameplay->initialized = true;
   }
 
@@ -39,7 +39,8 @@ extern "C" {
     SDL_Texture* blackfade = GetSprite(SPRITE_ID::black_1x1, data->spriteBuffer)->texture;
     SDL_SetTextureBlendMode(blackfade, SDL_BLENDMODE_BLEND);
     InitializeGame(&data->scenes.gameplay, data->arena_levels, data->tilesetBuffer);
-    ChangeScene(data, SCENE_TYPES::GAME);
+    InitializeMenu(&data->scenes.mainMenu, data->spriteBuffer, data->arena_main);
+    ChangeScene(data, SCENE_TYPES::MAINMENU);
   }
 
   
@@ -61,6 +62,7 @@ extern "C" {
         data->transition.fade_time_duration = 1;
         break;          
       case SCENE_TYPES::MAINMENU:
+        
         break;
       case SCENE_TYPES::GAME:{
         data->transition.fade_time_duration = 0.5f;
@@ -271,6 +273,7 @@ extern "C" {
       }
       break;
     case SCENE_TYPES::MAINMENU:
+      UpdateMenu(data);
       break;
     case SCENE_TYPES::GAME:
       UpdateGame(gameplay, &data->input, data->arena_scratch, dt);
@@ -320,12 +323,12 @@ extern "C" {
 
   void DrawScene(GameData* data, SCENE_TYPES scene, SDL_Renderer* renderer){
     switch(scene){
-      case SCENE_TYPES::TITLESCREEN:{
-          Sprite* background = GetSprite(SPRITE_ID::titlescreen_background, data->spriteBuffer);
-          RenderSprite_World(background, renderer, &data->camera, 0, 0);
-        }
+        case SCENE_TYPES::TITLESCREEN:
+        RenderSprite_World(data->scenes.titlescreen.background, renderer, &data->camera, 0, 0);
         break;
-        case SCENE_TYPES::MAINMENU:
+      case SCENE_TYPES::MAINMENU:
+        DrawMenu(&data->scenes.mainMenu, renderer, data->spriteBuffer);
+        break;
       case SCENE_TYPES::GAME:
         RenderLevel(data, renderer);  
         RenderEntities(data, renderer);
