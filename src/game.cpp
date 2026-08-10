@@ -25,7 +25,7 @@ extern "C" {
   void InitializeGame(Gameplay* gameplay, Arena* arena_levels, Tileset* tilesetBuffer){
     assert(gameplay->initialized == false);
     gameplay->currentLevelIndex = 0;
-    CreateLevel(arena_levels, &gameplay->levels[0], &tilesetBuffer[(int)TILESETS::Dungeon], "assets/levels/testing.tmj");
+    CreateLevel(arena_levels, &gameplay->levels[0], &tilesetBuffer[(int)TILESETS::Dungeon], "assets/levels/testing_goal.tmj");
     gameplay->initialized = true;
   }
 
@@ -136,6 +136,16 @@ extern "C" {
       if(IsActing(&entityBuffer[i])){
         are_entities_acting = true;
         break;
+      }
+    }
+
+    for (int i = 0; i < level->goalCount; i++) {
+      Entity* entity = GetEntity(level, level->goals[i].x, level->goals[i].y);
+      if(entity != nullptr && !IsActing(entity)){
+        level->goals[i].blink_timer += dt;
+      }
+      else{
+        level->goals[i].blink_timer = 0;
       }
     }
 

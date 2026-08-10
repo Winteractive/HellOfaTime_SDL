@@ -14,7 +14,8 @@ enum class SPRITE_ID{
   titlescreen_background,
   black_1x1,
   dungeon_tileset,
-  selection_marker
+  selection_marker,
+  Goal
 };
 
 const int NOT_SET = -1;

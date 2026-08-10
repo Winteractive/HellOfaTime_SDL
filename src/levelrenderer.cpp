@@ -2,6 +2,7 @@
 #include "arena.h"
 #include "entity.h"
 #include "gameState.h"
+#include "levels.h"
 #include "rendering.h"
 #include "spriteLibrary.h"
 #include <algorithm>
@@ -28,6 +29,13 @@ void RenderLevel(GameData* gameData, SDL_Renderer* renderer){
       RenderTile(sprite, id, level, renderer, &gameData->camera, x, y, 1, 1);
     }
   }
+
+  for(int i = 0; i < level->goalCount; i++){
+    Goal goal = level->goals[i];
+    Sprite* sprite = GetSprite(SPRITE_ID::Goal, gameData->spriteBuffer);
+    int frame = (int)(goal.blink_timer / 0.2) % (sprite->sprite_count_x * sprite->sprite_count_y);
+    RenderSprite_OnTile({frame, sprite}, level, renderer, &gameData->camera, goal.x, goal.y);
+  }  
 }
 
 bool IsEntityBelowOtherEntity(Entity* a, Entity* b){

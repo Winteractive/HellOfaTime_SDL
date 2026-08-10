@@ -19,8 +19,9 @@ static const SpriteDataEntry all_sprite_data[] = {
   {SPRITE_ID::black_1x1, "assets/sprites/1x1_black.png",0,0},
   {SPRITE_ID::titlescreen_background, "assets/sprites/titlescreen.png"},
   {SPRITE_ID::selection_marker, "assets/sprites/selection_marker.png",9,9},
-  {SPRITE_ID::dungeon_tileset, "assets/sprites/hell_of_a_time_dungeon_tileset.png",0,0, 9, 9}
-};
+  {SPRITE_ID::dungeon_tileset, "assets/sprites/hell_of_a_time_dungeon_tileset.png",0,0, 9, 9},
+  {SPRITE_ID::Goal, "assets/sprites/goal.png",8, 8, 8, 1}
+  };
 
 SpriteRenderInfo GetSprite_FromEntityState(Entity* entity, Sprite* spritebuffer){
   if(HasBehaviour(entity, Behaviour::IS_PETRIFIED)){
@@ -66,7 +67,7 @@ SpriteRenderInfo GetSprite_FromEntityState(Entity* entity, Sprite* spritebuffer)
     int forward = ((end - start) % sprite_count + sprite_count) % sprite_count;
     int backward = sprite_count - forward;
     end = (forward <= backward) ? (start + forward) : (start - backward);
-    int current_frame = ((int)lerp(start, end, entity->progress_01) % sprite_count);
+    int current_frame = (((int)lerp(start, end, entity->progress_01) + sprite_count) % sprite_count);
     return {current_frame, spritesheet};
   }
 

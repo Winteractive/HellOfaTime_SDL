@@ -17,3 +17,12 @@ const int SCREEN_HEIGHT = 1080;
 const int UPSCALE_FACTOR = 4;
 const int TILE_SIZE_PX_RAW = 16;
 const int TILE_SIZE_PX_SCALED = TILE_SIZE_PX_RAW * UPSCALE_FACTOR;
+
+inline void Expand1DTo2D(int flatIndex, int width, int* x, int* y){
+    *x = flatIndex % width;
+    *y = flatIndex / width;
+}
+inline void Expand1DTo2D(int flatIndex, int width, float* x, float* y){
+    *x = (float)(flatIndex % width);
+    *y = (float)(flatIndex / width);
+}

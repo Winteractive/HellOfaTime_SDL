@@ -221,14 +221,19 @@ int main() {
     float dt_scaler = 1;
     gameData->dt = &dt;
     gameData->dt_scaler = &dt_scaler;
+    int dll_check_counter = 0;
+    
     while(gameData->running){
 
-        DLL_CheckStatus(&dll);        
+        CalculateDeltaTime(&dt,  dt_scaler);
+        
+        if(++dll_check_counter > 100){
+            dll_check_counter = 0;
+            DLL_CheckStatus(&dll);        
+        }
 
         Reset(gameData->arena_scratch);
         
-        CalculateDeltaTime(&dt,  dt_scaler); 
-
         SDL_Event event;
         while(SDL_PollEvent(&event)){
 
@@ -258,8 +263,6 @@ int main() {
         float dx = *delta_x;
         float dy = *delta_y;
         gameData->input.mouse_magnitude = std::sqrt(dx * dx + dy * dy);
-        // printf("x: %.4f y: %.4f \n", *delta_x, *delta_y);
-        // printf("%.4f \n", gameData->input.mouse_magnitude);
 
         dll.update(gameData, dt);
 

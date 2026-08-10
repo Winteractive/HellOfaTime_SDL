@@ -4,6 +4,7 @@
 #include "levels.h"
 #include "arena.h"
 #include "Parsers/json.hpp"
+#include "common.h"
 #include "entity.h"
 #include "tilesetLibrary.h"
 using namespace std;
@@ -12,27 +13,14 @@ using namespace nlohmann;
 void CreateLevel(Arena* arena, LevelData* level, Tileset* tileset, const char* level_name){
   fstream stream(level_name);
   auto result = json::parse(stream);
-
-  bool found = false;
-  vector<uint16_t> levelData;
-  for (const auto& layer : result["layers"]) {
-      if (layer["name"] == "level") {
-          levelData = layer["data"].get<vector<uint16_t>>();
-          found = true;
-          break;
-      }
-  }
-  assert(found);
-  int first_non_zero_id = 0;
-  for (int id : levelData) {
-    if(id != 0){
-      first_non_zero_id = id;
-      break;
-    }
-  } 
-  int id_offset = Get_Tileset_ID_Offset_From_Tilemap(first_non_zero_id, result);
   
-  level->w = result["width"].get<int>();
+  bool found = false;
+  vector<uint16_t> levelData = AssetManagement::GetCellDataFromJsonLayer(result, "level", &found); 
+
+  assert(found);
+  int first_non_zero_id = AssetManagement::GetFirstNonZeroCell(&levelData);
+  int id_offset = Get_Tileset_ID_Offset_From_Tilemap(first_non_zero_id, result);
+    level->w = result["width"].get<int>();
   level->h = result["height"].get<int>();
   level->level_path = level_name;
   level->tileset = tileset;
@@ -44,6 +32,37 @@ void CreateLevel(Arena* arena, LevelData* level, Tileset* tileset, const char* l
     }
     level->cells[i] = local_id;
   }
+
+  vector<uint16_t> onLevel = AssetManagement::GetCellDataFromJsonLayer(result, "on_level", &found);
+  if(found){
+    int firstNonZero = AssetManagement::GetFirstNonZeroCell(&onLevel);
+    id_offset = Get_Tileset_ID_Offset_From_Tilemap(firstNonZero, result);
+    level->goalCount = 0;
+    
+    for (int i = 0; i < level->w * level->h; i++) {
+      int local_id = onLevel[i] - id_offset + 1;
+      if(local_id > 0){
+        level->goalCount++;
+      }
+    }
+    
+    level->goals = ALLOC_ARRAY(arena, Goal, level->goalCount);
+    int index = 0;
+    for (int i = 0; i < level->w * level->h; i++) {
+      int local_id = onLevel[i] - id_offset + 1;
+      if(local_id < 0){
+        local_id = 0;
+      }
+      if(local_id != 0){
+        int x;
+        int y;
+        Expand1DTo2D(i, level->w, &x, &y);
+        level->goals[index].x = x; 
+        level->goals[index].y = y; 
+        index++;
+      }
+    }  
+  }
 }
 
 void CreateEntities(LevelData* lvl_data, Arena* arena){
@@ -54,15 +73,9 @@ void CreateEntities(LevelData* lvl_data, Arena* arena){
   fstream stream(lvl_data->level_path);
   auto result = json::parse(stream);
 
-  vector<uint16_t> entities;
   bool found = false;
-  for (const auto& layer : result["layers"]) {
-      if (layer["name"] == "entities") {
-          entities = layer["data"].get<vector<uint16_t>>();
-          found = true;
-          break;
-      }
-  }
+  vector<uint16_t> entities = AssetManagement::GetCellDataFromJsonLayer(result, "entities", &found);
+  
   if(!found){
     return;
   }
@@ -72,8 +85,9 @@ void CreateEntities(LevelData* lvl_data, Arena* arena){
       continue;
     }
     uint16_t entity_id = GetLocalTileID(entities[i], result);
-    int x = i % lvl_data->w;
-    int y = i / lvl_data->w;
+    int x;
+    int y;
+    Expand1DTo2D(i, lvl_data->w, &x, &y);
     AddEntity((ENTITY_ID)entity_id, x, y, lvl_data);
   }    
 }
@@ -168,4 +182,29 @@ Entity* RaycastFirstEntity(int x_origin, int y_origin, Direction direction, Leve
   }
 
   return nullptr;
+}
+
+namespace AssetManagement{
+ std::vector<uint16_t> GetCellDataFromJsonLayer(nlohmann::json& parsedJson, const char* layerName, bool* wasFound){
+   std::vector<uint16_t> result;
+   *wasFound = false;
+   for (const auto& layer : parsedJson["layers"]) {
+        if (layer["name"] == layerName) {
+            result = layer["data"].get<vector<uint16_t>>();
+            *wasFound = true;
+            break;
+        }
+    }   
+    return result;
+  }
+
+  int GetFirstNonZeroCell(std::vector<uint16_t> *list){
+    for (int id : *list) {
+      if(id != 0){
+        return id;
+      }
+    } 
+      assert(false);
+      return -1;
+  }
 }
