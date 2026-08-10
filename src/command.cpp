@@ -161,6 +161,8 @@ void Redo(CommandBuffer* cmdBuffer, LevelData* level){
     }
   }
 }
-
-
-
+void ResetCommandBuffer(CommandBuffer* buffer){
+  buffer->index = 0;
+  buffer->head = 0;
+  buffer->timestamp = 0;
+}

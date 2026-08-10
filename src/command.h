@@ -139,6 +139,7 @@ struct CommandBuffer{
   uint32_t timestamp;
 };
 
+void ResetCommandBuffer(CommandBuffer* buffer);
 void Push(CommandBuffer* cmdBuffer, AnyCommand cmd, LevelData* level);
 void Undo(CommandBuffer* cmdBuffer, LevelData* level);
 void Redo(CommandBuffer* cmdBuffer, LevelData* level);

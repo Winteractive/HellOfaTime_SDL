@@ -25,7 +25,8 @@ extern "C" {
   void InitializeGame(Gameplay* gameplay, Arena* arena_levels, Tileset* tilesetBuffer){
     assert(gameplay->initialized == false);
     gameplay->currentLevelIndex = 0;
-    CreateLevel(arena_levels, &gameplay->levels[0], &tilesetBuffer[(int)TILESETS::Dungeon], "assets/levels/testing_goal.tmj");
+    CreateLevel(arena_levels, &gameplay->levels[0], &tilesetBuffer[(int)TILESETS::Dungeon], "assets/levels/level_01.tmj");
+    CreateLevel(arena_levels, &gameplay->levels[1], &tilesetBuffer[(int)TILESETS::Dungeon], "assets/levels/level_02.tmj");
     gameplay->initialized = true;
   }
 
@@ -46,7 +47,8 @@ extern "C" {
   
 
   void StartLevel(Gameplay* gameplay, Arena* arena_commands, Arena* arena_entities){
-    Reset(arena_commands);
+    ResetCommandBuffer(gameplay->commandBuffer);
+    Reset(arena_commands);    
     CreateEntities(&gameplay->levels[gameplay->currentLevelIndex], arena_entities);
     gameplay->activePlayerIndex = 0;
   }
@@ -95,7 +97,7 @@ extern "C" {
   void UpdateTitlescreen(TitleScreen* titlescreen, const float dt){
   }
 
-  void UpdateGame(Gameplay* gameplay, Input* input, Arena* arena_scratch, const float dt){
+  void UpdateGame(Gameplay* gameplay, Input* input, Arena* arena_scratch, Arena* arena_commands, Arena* arena_entities, const float dt){
     float undo_speed_up = std::lerp(1.0, 0.15, (gameplay->commandBuffer->head - gameplay->commandBuffer->index) * (1.0/30.0));
     if(undo_speed_up < 0.15){
       undo_speed_up = 0.15;
@@ -147,6 +149,25 @@ extern "C" {
       else{
         level->goals[i].blink_timer = 0;
       }
+    }
+
+    if(level->goalCount > 0){
+      int goals_reached = 0;
+      for (int i = 0; i < level->goalCount; i++) {
+        Goal goal = level->goals[i];
+        Entity* entity = GetEntity(level, goal.x, goal.y);
+        if(entity == nullptr){
+          break;
+        }
+        else if(HasBehaviour(entity, Behaviour::IS_PLAYER)){
+          goals_reached++;
+        }
+      }
+      if(goals_reached == level->goalCount){
+        gameplay->currentLevelIndex++;
+        StartLevel(gameplay, arena_commands, arena_entities);
+        return;
+      }      
     }
 
     for (int i = 0; i < level->entityCount; i++){
@@ -286,7 +307,7 @@ extern "C" {
       UpdateMenu(data);
       break;
     case SCENE_TYPES::GAME:
-      UpdateGame(gameplay, &data->input, data->arena_scratch, dt);
+      UpdateGame(gameplay, &data->input, data->arena_scratch, data->arena_commands, data->arena_entities, dt);
       break;
     case SCENE_TYPES::CREDITS:
       break;

@@ -13,7 +13,7 @@ const char* FALLBACK_PATH = "assets/sprites/fallback.png";
 static const SpriteDataEntry all_sprite_data[] = {
   {SPRITE_ID::Fallback, FALLBACK_PATH,8,8},
   {SPRITE_ID::Demon, "assets/sprites/player.png"},
-  {SPRITE_ID::Rock, "assets/sprites/rock.png", 10, 20},
+  {SPRITE_ID::Rock, "assets/sprites/rock.png", 10, 18},
   {SPRITE_ID::Medusa_Rotate, "assets/sprites/medusa_rotate.png", 12, 24, 8, 1},
   {SPRITE_ID::Dropshadow, "assets/sprites/dropshadow.png", 8, 8},
   {SPRITE_ID::black_1x1, "assets/sprites/1x1_black.png",0,0},
