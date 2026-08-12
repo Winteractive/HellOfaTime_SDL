@@ -6,7 +6,8 @@
 
 #define loop(i, e) for(int i = 0; i < e; i++)
 
-constexpr size_t GAME_MEMORY_ALLOWANCE = MEGABYTES(10);
+constexpr size_t GAME_MEMORY_ALLOWANCE = MEGABYTES(14);
+constexpr size_t AUDIO_MEMORY_ALLOWANCE = MEGABYTES(5);
 constexpr int FPS = 240;
 const double FRAME_TIME_MS = 1000.0 / FPS;
 

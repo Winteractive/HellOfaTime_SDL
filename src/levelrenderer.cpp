@@ -68,7 +68,7 @@ void RenderEntities(GameData* data, SDL_Renderer* renderer){
     float y_animated = std::lerp(entity->y_prev, entity->y, entity->progress_01);
     float ground_y = y_animated;
     if(entity->action == Actions::MOVING && HasBehaviour(entity, Behaviour::JUMPS) && !HasBehaviour(entity, Behaviour::IS_PUSHING)){
-     y_animated -= 0.5 * sinf(entity->progress_01 * 3.14);
+     y_animated -= (data->scenes.gameplay.input_buffer_read_count % 2 == 0 ? 0.5 : 0.3) * sinf(entity->progress_01 * 3.14);
     }
 
     Sprite* dropshadow = &data->spriteBuffer[(int)SPRITE_ID::Dropshadow];

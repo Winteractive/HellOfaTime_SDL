@@ -3,6 +3,7 @@
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_scancode.h"
 #include "arena.h"
+#include "audioSystem.h"
 #include "common.h"
 #include "dev_gui.h"
 #include "command.h"
@@ -32,6 +33,8 @@ extern "C" {
 
   void Initialize(GameData* data, SDL_Window* window, SDL_Renderer* renderer){
     DEV::Initialize(window, renderer);
+    InitializeAudioSystem(&data->audio, data->arena_main);
+    AssetManagement::LoadAllSFX(&data->audio);
     AssetManagement::LoadAllSprites(data->spriteBuffer, renderer);
     data->imGui_context = ImGui::GetCurrentContext();
 
@@ -252,7 +255,10 @@ extern "C" {
     }
 
     if(!IsActing(entity)){
-      TryMove(entity, level, gameplay->commandBuffer, xDir, yDir, entity->strength);
+      bool moved = TryMove(entity, level, gameplay->commandBuffer, xDir, yDir, entity->strength);
+      if(moved){
+        PlaySFX(SFX_ID::JUMP);
+      }
       gameplay->commandBuffer->timestamp += 1;
       gameplay->input_buffer_read_count++;
     }

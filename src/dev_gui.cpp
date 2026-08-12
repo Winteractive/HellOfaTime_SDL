@@ -1,4 +1,5 @@
 #include "dev_gui.h"
+#include "FMOD/fmod.h"
 #include "SDL3/SDL_video.h"
 #include "command.h"
 #include "common.h"
@@ -7,6 +8,7 @@
 #include "imgui/imgui_impl_sdlrenderer3.h"
 #include "SDL3/SDL_render.h"
 #include "imgui/imgui_internal.h"
+#include <cstddef>
 #include <string>
 
 using namespace std;
@@ -49,6 +51,20 @@ void DrawFPS(GameData* data){
   ImGui::PlotHistogram("fps", editor->fps_buffer, editor->fps_buffer_count,0,nullptr ,0,FPS, ImVec2(-1,35));
 }
 
+ 
+void DrawAudioMemoryPanel(AudioSystem* audio) {
+  int current_bytes = 0;
+  FMOD_Memory_GetStats(&current_bytes, NULL, false);
+
+  float fraction = (float)current_bytes / (float)AUDIO_MEMORY_ALLOWANCE;
+
+  char overlay[64];
+  snprintf(overlay, sizeof(overlay), "%d KB / %d KB", current_bytes / 1024, (int)(AUDIO_MEMORY_ALLOWANCE / 1024));
+
+  ImGui::Text("FMOD Memory Pool");
+  ImGui::ProgressBar(fraction, ImVec2(-1, 0), overlay);
+}
+
 void Draw_History(LevelData* level, CommandBuffer* commandBuffer){
   int sliderPos = commandBuffer->index;
 
@@ -73,6 +89,10 @@ void DEV::Draw(GameData* data, SDL_Renderer* renderer){
   Draw_Imgui_Arena_Usage(data->arena_entities, "entities");
   Draw_Imgui_Arena_Usage(data->arena_input, "input");
   Draw_Imgui_Arena_Usage(data->arena_scratch, "scratch");
+
+  if(data->audio.initialized){
+    DrawAudioMemoryPanel(&data->audio);
+  }
  
   Draw_History(GetCurrentLevel(&data->scenes.gameplay), data->scenes.gameplay.commandBuffer);
   DrawFPS(data);

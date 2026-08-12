@@ -1,5 +1,6 @@
 #pragma once
 #include "arena.h"
+#include "audioSystem.h"
 #include "camera.h"
 #include "command.h"
 #include "entity.h"
@@ -77,6 +78,7 @@ struct GameData {
   Input input;
   Sprite* spriteBuffer;
   Tileset* tilesetBuffer;
+  AudioSystem audio;
 
   bool running;
   Memory::Arena* arena_main;
