@@ -60,7 +60,7 @@ void RenderEntities(GameData* data, SDL_Renderer* renderer){
     if(entity->active == false){
       continue;
     }
-    SpriteRenderInfo sprite = GetSprite_FromEntityState(entity, data->spriteBuffer);
+    SpriteRenderInfo sprite = GetSprite_FromEntityState(entity, data->spriteBuffer, data->ticks_total);
     if(HasBehaviour(entity, Behaviour::IS_PETRIFIED)){
       sprite = GetSprite(SPRITE_ID::Rock, data->spriteBuffer);
     }

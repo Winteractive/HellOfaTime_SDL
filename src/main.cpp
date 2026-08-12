@@ -1,5 +1,6 @@
 #include <cmath>
 #include <cstddef>
+#include <cstdint>
 #include <windows.h>
 #include <fileapi.h>
 #include <cstdio>
@@ -163,6 +164,7 @@ int main() {
     Memory::Initialize(arena_main, game_memory, GAME_MEMORY_ALLOWANCE);
     GameData* gameData = ALLOC(arena_main, GameData);
     gameData->arena_main = arena_main;
+    gameData->ticks_total = ALLOC(arena_main, uint64_t);
 
     int SPRITE_COUNT = 256;
     size_t IMAGE_ARENA_SIZE = MEGABYTES(1);

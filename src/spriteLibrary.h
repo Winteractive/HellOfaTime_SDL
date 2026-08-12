@@ -8,6 +8,9 @@ enum class SPRITE_ID{
   Rock,
   Demon,
   Medusa_Rotate,
+  Medusa_Idle_Left,
+  Medusa_Idle_Front,
+  Medusa_Idle_Back,
   Golem,
   Siren,
   Dropshadow,
@@ -29,25 +32,36 @@ struct Sprite{
   int pivot_y;
   int sprite_count_x;
   int sprite_count_y;
+  int framerate;
 };
 
 struct SpriteRenderInfo{
   Sprite* sprite;
   int frame;
+  bool flipped_x;
 
   SpriteRenderInfo(){
     this->sprite = nullptr;
     this->frame = 0;
+    this->flipped_x = false;
   }
 
   SpriteRenderInfo(int frame, Sprite* sprite){
     this->frame = frame;
     this->sprite = sprite;
+    this->flipped_x = false;
+  }
+
+  SpriteRenderInfo(int frame, Sprite* sprite, bool flipped_x){
+    this->frame = frame;
+    this->sprite = sprite;
+    this->flipped_x = flipped_x;
   }
 
   SpriteRenderInfo(Sprite* sprite){
     this->sprite = sprite;
     this->frame = 0;
+    this->flipped_x = false;
   }  
 };
 
@@ -64,12 +78,13 @@ struct SpriteDataEntry{
   int pivot_y = NOT_SET;
   int tileset_cell_count_x = NOT_SET;
   int tileset_cell_count_y = NOT_SET;
+  int framerate = NOT_SET;
 };
 
 
 Sprite* GetSpriteFromID(ENTITY_ID id, Sprite* spriteBuffer);
 Sprite* GetSprite(SPRITE_ID sprite_id, Sprite* spriteBuffer);
-SpriteRenderInfo GetSprite_FromEntityState(Entity* entity, Sprite* spritebuffer);
+SpriteRenderInfo GetSprite_FromEntityState(Entity* entity, Sprite* spritebuffer, const uint64_t* ticks_total);
 
 namespace AssetManagement
 {

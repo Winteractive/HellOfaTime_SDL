@@ -32,6 +32,7 @@ extern "C" {
   }
 
   void Initialize(GameData* data, SDL_Window* window, SDL_Renderer* renderer){
+    *data->ticks_total = 0;
     DEV::Initialize(window, renderer);
     InitializeAudioSystem(&data->audio, data->arena_main);
     AssetManagement::LoadAllSFX(&data->audio);
@@ -267,6 +268,8 @@ extern "C" {
   
 
   void Update(GameData* data,float dt){
+    *data->ticks_total += 1;
+    
     TitleScreen* titlescreen = &data->scenes.titlescreen;
     Gameplay* gameplay = &data->scenes.gameplay;
     EditorData* editorData = &data->editor_data;

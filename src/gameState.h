@@ -10,6 +10,7 @@
 #include "levels.h"
 #include "mainmenu.h"
 #include "spriteLibrary.h"
+#include <cstdint>
 
 
 enum class SCENE_TYPES : uint8_t{
@@ -69,6 +70,7 @@ struct EditorData{
   int fps_buffer_index;
 };
 
+
 struct GameData {
   SCENE_TYPES scene_current;
   SCENE_TYPES scene_previous;
@@ -79,7 +81,8 @@ struct GameData {
   Sprite* spriteBuffer;
   Tileset* tilesetBuffer;
   AudioSystem audio;
-
+  uint64_t* ticks_total;
+  
   bool running;
   Memory::Arena* arena_main;
   Memory::Arena* arena_levels;

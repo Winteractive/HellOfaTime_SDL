@@ -45,7 +45,7 @@ void RenderSprite_World(SpriteRenderInfo spriteRenderInfo, SDL_Renderer* rendere
   
   SDL_SetTextureScaleMode(sprite->texture, SDL_SCALEMODE_PIXELART);
   SDL_SetTextureAlphaModFloat(sprite->texture, alpha);
-  SDL_FlipMode flip = flipped ? SDL_FlipMode::SDL_FLIP_HORIZONTAL : SDL_FlipMode::SDL_FLIP_NONE;
+  SDL_FlipMode flip = (flipped || spriteRenderInfo.flipped_x) ? SDL_FlipMode::SDL_FLIP_HORIZONTAL : SDL_FlipMode::SDL_FLIP_NONE;
   SDL_RenderTextureRotated(renderer, sprite->texture, &tilesetRect, &rect, 0, 0, flip);
 }
 
