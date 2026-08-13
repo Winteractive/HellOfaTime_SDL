@@ -45,6 +45,7 @@ extern "C" {
     SDL_SetTextureBlendMode(blackfade, SDL_BLENDMODE_BLEND);
     InitializeGame(&data->scenes.gameplay, data->arena_levels, data->tilesetBuffer);
     InitializeMenu(&data->scenes.mainMenu, data->spriteBuffer, data->arena_main);
+    PlaySong(SONG_ID::THEME);
     ChangeScene(data, SCENE_TYPES::MAINMENU);
   }
 
@@ -102,6 +103,13 @@ extern "C" {
   }
 
   void UpdateGame(Gameplay* gameplay, Input* input, Arena* arena_scratch, Arena* arena_commands, Arena* arena_entities, const float dt){
+
+    if(KeyPressed(input, SDL_SCANCODE_R)){ // restart level on `R`
+      StartLevel(gameplay, arena_commands, arena_entities);
+      return;
+    }
+
+    
     float undo_speed_up = std::lerp(1.0, 0.15, (gameplay->commandBuffer->head - gameplay->commandBuffer->index) * (1.0/30.0));
     if(undo_speed_up < 0.15){
       undo_speed_up = 0.15;

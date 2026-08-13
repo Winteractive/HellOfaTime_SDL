@@ -1,5 +1,6 @@
 #include "audioSystem.h"
 #include "FMOD/fmod.h"
+#include "FMOD/fmod_common.h"
 #include "arena.h"
 #include "common.h"
 #include <cassert>
@@ -65,6 +66,27 @@ void PlaySFX(SFX_ID id, float volume){
   FMOD_Channel_SetVolume(*channel_slot, volume);
 }
 
+void PlaySong(SONG_ID id){
+  g_audioSystem->song_id = id;
+  if(g_audioSystem->song != nullptr){
+    FMOD_Channel_Stop(g_audioSystem->song_channel);
+    FMOD_Sound_Release(g_audioSystem->song);
+  }
+  FMOD_SYSTEM* system = g_audioSystem->sound_system;
+  const char* song_name;
+  switch (id) {
+  case SONG_ID::THEME:
+    song_name = "assets/audio/music/hellofatime.mp3";
+    break;
+  case SONG_ID::NONE:
+    break;
+  }
+  FMOD_System_CreateStream(system, song_name, FMOD_LOOP_NORMAL, nullptr, &g_audioSystem->song);
+  int INFINITE = -1;
+  FMOD_Sound_SetLoopCount(g_audioSystem->song, INFINITE);
+  FMOD_System_PlaySound(system, g_audioSystem->song, nullptr, false, &g_audioSystem->song_channel);
+}
+
 void Update(AudioSystem* audio){
   if(g_audioSystem == nullptr || g_audioSystem != audio){
     g_audioSystem = audio;
@@ -72,6 +94,7 @@ void Update(AudioSystem* audio){
   assert(audio->initialized);
   FMOD_System_Update(audio->sound_system);
 }
+
 
 namespace AssetManagement{
   void LoadAllSFX(AudioSystem* audioSystem){

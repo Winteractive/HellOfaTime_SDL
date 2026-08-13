@@ -12,6 +12,11 @@ enum class SFX_ID{
   COUNT
 };
 
+enum class SONG_ID{
+  NONE,
+  THEME
+};
+
 struct SoundDataEntry{
   SFX_ID id;
   const char* path;
@@ -24,12 +29,16 @@ struct AudioSystem{
   static const int CHANNEL_COUNT = 32;
   FMOD_CHANNEL* channels[CHANNEL_COUNT];
   FMOD_SOUND* soundEffects[(int)SFX_ID::COUNT];
+  SONG_ID song_id;
+  FMOD_SOUND* song;
+  FMOD_CHANNEL* song_channel;
 };
 
 // global promise
 extern AudioSystem* g_audioSystem;
 
 
+void PlaySong(SONG_ID id);
 void PlaySFX(SFX_ID id, float volume = 1);
 void InitializeAudioSystem(AudioSystem* audio, Memory::Arena* arena_main);
 void UpdateAudio(AudioSystem* audio);
