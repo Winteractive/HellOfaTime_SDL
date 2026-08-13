@@ -18,7 +18,12 @@ enum class SPRITE_ID{
   black_1x1,
   dungeon_tileset,
   selection_marker,
-  Goal
+  Goal,
+  Menu_Horizon,
+  Menu_Cloud_Back,
+  Menu_Cloud_Front,
+  Menu_Middle,
+  Menu_Front
 };
 
 const int NOT_SET = -1;

@@ -375,7 +375,7 @@ extern "C" {
         RenderSprite_World(data->scenes.titlescreen.background, renderer, &data->camera, 0, 0);
         break;
       case SCENE_TYPES::MAINMENU:
-        DrawMenu(&data->scenes.mainMenu, renderer, data->spriteBuffer);
+        DrawMenu(&data->scenes.mainMenu, renderer, data->spriteBuffer, &data->input);
         break;
       case SCENE_TYPES::GAME:
         RenderLevel(data, renderer);  

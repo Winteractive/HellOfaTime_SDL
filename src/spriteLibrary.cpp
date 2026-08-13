@@ -32,7 +32,12 @@ static const SpriteDataEntry all_sprite_data[] = {
   {SPRITE_ID::titlescreen_background, "assets/sprites/titlescreen.png"},
   {SPRITE_ID::selection_marker, "assets/sprites/selection_marker.png",9,9},
   {SPRITE_ID::dungeon_tileset, "assets/sprites/hell_of_a_time_dungeon_tileset.png",0,0, 9, 9},
-  {SPRITE_ID::Goal, "assets/sprites/goal.png",8, 8, 8, 1}
+  {SPRITE_ID::Goal, "assets/sprites/goal.png",8, 8, 8, 1},
+  {SPRITE_ID::Menu_Horizon, "assets/sprites/mainmenu_background.png"},
+  {SPRITE_ID::Menu_Cloud_Back, "assets/sprites/mainmenu_cloud_back.png"},
+  {SPRITE_ID::Menu_Cloud_Front, "assets/sprites/mainmenu_cloud_front.png"},
+  {SPRITE_ID::Menu_Middle, "assets/sprites/mainmenu_middle.png"},
+  {SPRITE_ID::Menu_Front, "assets/sprites/mainmenu_front.png"},
   };
 
 SpriteRenderInfo GetSprite_FromEntityState(Entity* entity, Sprite* spritebuffer, const uint64_t* ticks_total){
