@@ -3,6 +3,7 @@
 #include "arena.h"
 #include "button.h"
 #include "common.h"
+#include "fontLibrary.h"
 #include "gameState.h"
 #include "input.h"
 #include "rendering.h"
@@ -10,20 +11,31 @@
 #include <cassert>
 
  
-void InitializeMenu(MainMenu* mainmenu, Sprite* spriteBuffer, Memory::Arena* arena_main){
+void InitializeMenu(MainMenu* mainmenu, Sprite* spriteBuffer, FontAtlas* font, Memory::Arena* arena_main){
   assert(mainmenu->initialized == false);
   mainmenu->button_count = 2;
   mainmenu->buttons = ALLOC_ARRAY(arena_main, Button, mainmenu->button_count);
   
-  SetupButton(&mainmenu->buttons[0], ButtonType::START_GAME, spriteBuffer, {SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0, 200, 80}, Alignment::Centered);  
-  SetupButton(&mainmenu->buttons[1], ButtonType::QUIT, spriteBuffer, {SCREEN_WIDTH / 2.0, (SCREEN_HEIGHT / 2.0) + 100, 200, 80}, Alignment::Centered);  
+  SetupButton(&mainmenu->buttons[0],
+              ButtonType::START_GAME,
+              spriteBuffer,
+              {SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0, 300, 110},
+              Alignment::Centered,
+              font,
+              "Start Game");
+   
+  mainmenu->buttons[0].is_dynamic = true;
+  
+  SetupButton(&mainmenu->buttons[1], ButtonType::QUIT, spriteBuffer, {SCREEN_WIDTH / 2.0, (SCREEN_HEIGHT / 2.0) + 200, 200, 80}, Alignment::Centered, font, "Quit");  
+
 
   mainmenu->background_horizon = GetSprite(SPRITE_ID::Menu_Horizon, spriteBuffer);
   mainmenu->background_cloud_back = GetSprite(SPRITE_ID::Menu_Cloud_Back, spriteBuffer);
   mainmenu->background_cloud_front = GetSprite(SPRITE_ID::Menu_Cloud_Front, spriteBuffer);
   mainmenu->background_middle = GetSprite(SPRITE_ID::Menu_Middle, spriteBuffer);
   mainmenu->background_front = GetSprite(SPRITE_ID::Menu_Front, spriteBuffer);
-  
+
+  mainmenu->activeButtonIndex = 0;
   mainmenu->initialized = true;
 }
 
@@ -102,6 +114,13 @@ void DrawMenu(MainMenu* mainmenu, SDL_Renderer* renderer, Sprite* spriteBuffer, 
   RenderSprite_World(GetSprite(SPRITE_ID::Menu_Front, spriteBuffer),       renderer, NULL, center_x + (offset_x / 5), center_y + (offset_y / 5), scale);
   for (int i = 0; i < mainmenu->activeButtonCount; i++) {
     Button* button = mainmenu->activeButtons[i];
-    RenderButton(mainmenu->activeButtons[i], i == mainmenu->activeButtonIndex, renderer);
+    if(button->is_dynamic){
+      RenderButton_Dynamic(button, i == mainmenu->activeButtonIndex, renderer);
+    }
+    else{
+      RenderButton(button, i == mainmenu->activeButtonIndex, renderer);
+    }
   }
+
+  mainmenu->activeButtonCount = 0;
 }

@@ -1,7 +1,9 @@
 #include "button.h"
 #include "collision.h"
+#include "common.h"
 #include "game.h"
 #include "gameState.h"
+#include "rendering.h"
 #include "spriteLibrary.h"
 
 bool IsHoveredOver(Button* button, float x, float y){
@@ -12,26 +14,37 @@ bool IsHoveredOver(Button* button, float x, float y){
   return CheckCollisionInsideBounds(button->rect, x, y);
 }
 
-void SetupButton(Button* button, ButtonType type, Sprite* spriteBuffer, SDL_FRect rect, ButtonMode mode){
+void SetupButton(Button* button, ButtonType type, Sprite* spriteBuffer, SDL_FRect rect, Alignment mode, FontAtlas* font, const char* text){
   assert(type != ButtonType::NONE);
   button->type = type;
   button->rect = rect;
-  if(mode == ButtonMode::Centered){
+  if(mode == Alignment::Centered){
     button->rect.x -= button->rect.w / 2;
     button->rect.y -= button->rect.h / 2;
   }
   button->is_active = true;
   switch(button->type){
   case ButtonType::START_GAME:
-    button->texture = GetSprite(SPRITE_ID::Fallback, spriteBuffer)->texture;
+    button->sprite = GetSprite(SPRITE_ID::Button_Basic, spriteBuffer);
     break;
   case ButtonType::QUIT:
-    button->texture = GetSprite(SPRITE_ID::Fallback, spriteBuffer)->texture;
+    button->sprite = GetSprite(SPRITE_ID::Fallback, spriteBuffer);
     break;
   default:
-    button->texture = GetSprite(SPRITE_ID::Fallback, spriteBuffer)->texture;
+    button->sprite = GetSprite(SPRITE_ID::Fallback, spriteBuffer);
   break;
   }
+  bool hasText = !IsStringEmpty(text);
+
+  if(font == nullptr){
+    assert(!hasText);
+  }
+  if(hasText){
+    assert(font != nullptr);
+  }
+
+  button->font = font;
+  button->text = text;
 }
 
 void PressButton(Button *button, GameData *data){

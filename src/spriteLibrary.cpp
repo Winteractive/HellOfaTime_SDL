@@ -38,6 +38,7 @@ static const SpriteDataEntry all_sprite_data[] = {
   {SPRITE_ID::Menu_Cloud_Front, "assets/sprites/mainmenu_cloud_front.png"},
   {SPRITE_ID::Menu_Middle, "assets/sprites/mainmenu_middle.png"},
   {SPRITE_ID::Menu_Front, "assets/sprites/mainmenu_front.png"},
+  {SPRITE_ID::Button_Basic, "assets/sprites/basic_button.png",0,0,3,3},
   };
 
 SpriteRenderInfo GetSprite_FromEntityState(Entity* entity, Sprite* spritebuffer, const uint64_t* ticks_total){

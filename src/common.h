@@ -27,3 +27,8 @@ inline void Expand1DTo2D(int flatIndex, int width, float* x, float* y){
     *x = (float)(flatIndex % width);
     *y = (float)(flatIndex / width);
 }
+
+static const char STOP_CHAR = '\0';
+inline bool IsStringEmpty(const char* str){
+    return str == nullptr || str[0] == STOP_CHAR;
+}

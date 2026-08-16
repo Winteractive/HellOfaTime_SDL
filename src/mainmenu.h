@@ -5,6 +5,7 @@ struct GameData;
 struct SDL_Renderer;
 struct Button;
 struct Sprite;
+struct FontAtlas;
 namespace Memory{
   struct Arena;
 }
@@ -23,6 +24,6 @@ struct MainMenu {
   Sprite* background_front;
 };
 
-void InitializeMenu(MainMenu* mainmenu, Sprite* spriteBuffer, Memory::Arena* arena_main);
+void InitializeMenu(MainMenu* mainmenu, Sprite* spriteBuffer, FontAtlas* font, Memory::Arena* arena_main);
 void UpdateMenu(GameData* data);
 void DrawMenu(MainMenu* mainmenu, SDL_Renderer* renderer, Sprite* spriteBuffer, Input* input);
