@@ -1,14 +1,10 @@
 #pragma once
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
+#include "rendering.h"
 
 struct Sprite;
 struct GameData;
-
-enum class ButtonMode {
-  Centered,
-  Raw
-};
 
 enum class ButtonType {
   NONE,
@@ -27,5 +23,4 @@ struct Button {
 void PressButton(Button* button, GameData* data);
 int GetActiveButtonCount(Button* buttons, int count);
 bool IsHoveredOver(Button* button, float x, float y);
-void SetupButton(Button* button, ButtonType type, Sprite* spriteBuffer, SDL_FRect rect, ButtonMode mode);
-  
+void SetupButton(Button* button, ButtonType type, Sprite* spriteBuffer, SDL_FRect rect, Alignment mode);  

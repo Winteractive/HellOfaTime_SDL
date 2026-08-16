@@ -13,6 +13,7 @@
 #include "SDL3/SDL_stdinc.h"
 #include "SDL3/SDL_timer.h"
 #include "SDL3/SDL_log.h"
+#include "SDL_TTF/SDL_ttf.h"
 #include "command.h"
 #include "common.h"
 #include "arena.h"
@@ -113,6 +114,7 @@ void* AllocateGameMemory(){
 void SDL_Setup(){
     SDL_Init(SDL_INIT_EVENTS);
     SDL_SetLogPriorities(SDL_LOG_PRIORITY_VERBOSE);
+    TTF_Init();
 
     window = SDL_CreateWindow("hell of a time", SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     renderer = SDL_CreateRenderer(window, NULL);

@@ -3,8 +3,10 @@
 #include "SDL3/SDL_rect.h"
 #include "SDL3/SDL_render.h"
 #include "SDL3/SDL_surface.h"
+#include "button.h"
 #include "camera.h"
 #include "common.h"
+#include "fontLibrary.h"
 #include "spriteLibrary.h"
 #include <cstddef>
 #include <cstdint>
@@ -67,4 +69,30 @@ void RenderButton(Button* button, bool is_selected, SDL_Renderer* renderer){
   SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
   SDL_SetTextureColorMod(texture, colorOverlay, colorOverlay, colorOverlay);
   SDL_RenderTexture(renderer, button->texture, NULL, &button->rect);
+}
+
+static const char STOP_CHAR = '\0';
+void RenderText(FontAtlas* atlas, const char* text, SDL_Renderer* renderer, Camera* camera, const float x, const float y, Alignment mode){
+  assert(atlas->atlasTexture != nullptr);
+  float draw_position_x = x;
+  float draw_position_y = y;
+  if(camera != nullptr){
+    draw_position_x -= camera->camera_x;
+    draw_position_y -= camera->camera_y;
+  }
+
+  if(mode == Alignment::Centered){
+    float totalWidth = 0;
+    for (int i = 0; text[i] != STOP_CHAR; i++) {
+      totalWidth += atlas->glyphs[text[i]].atlasPosition.w;
+    }
+    draw_position_x -= totalWidth / 2.0;
+  }
+  
+  for (int i = 0; text[i] != STOP_CHAR; i++) {
+    Glyph glyph = atlas->glyphs[text[i]];
+    SDL_RenderTexture(renderer, atlas->atlasTexture, &glyph.atlasPosition, &glyph.atlasPosition);
+
+    draw_position_x += glyph.atlasPosition.w;  
+  }
 }

@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "command.h"
 #include "entity.h"
+#include "fontLibrary.h"
 #include "imgui/imgui_internal.h"
 #include "input.h"
 #include "leveleditor.h"
@@ -82,6 +83,7 @@ struct GameData {
   Tileset* tilesetBuffer;
   AudioSystem audio;
   uint64_t* ticks_total;
+  FontAtlas font;
   
   bool running;
   Memory::Arena* arena_main;

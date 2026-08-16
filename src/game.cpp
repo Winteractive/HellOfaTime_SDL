@@ -4,11 +4,13 @@
 #include "SDL3/SDL_scancode.h"
 #include "arena.h"
 #include "audioSystem.h"
+#include "button.h"
 #include "common.h"
 #include "dev_gui.h"
 #include "command.h"
 #include "entity.h"
 #include "entityrenderer.h"
+#include "fontLibrary.h"
 #include "gameState.h"
 #include "imgui/imgui.h"
 #include "input.h"
@@ -38,7 +40,7 @@ extern "C" {
     AssetManagement::LoadAllSFX(&data->audio);
     AssetManagement::LoadAllSprites(data->spriteBuffer, renderer);
     data->imGui_context = ImGui::GetCurrentContext();
-
+    AssetManagement::LoadFont(renderer, "assets/fonts/ByteBounce.ttf", &data->font, 48);
     AssetManagement::LoadAllTilesets(data->tilesetBuffer, data->arena_images);
 
     SDL_Texture* blackfade = GetSprite(SPRITE_ID::black_1x1, data->spriteBuffer)->texture;
@@ -376,6 +378,7 @@ extern "C" {
         break;
       case SCENE_TYPES::MAINMENU:
         DrawMenu(&data->scenes.mainMenu, renderer, data->spriteBuffer, &data->input);
+        RenderText(&data->font, "hello sailor", renderer, &data->camera, SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0, Alignment::Centered);
         break;
       case SCENE_TYPES::GAME:
         RenderLevel(data, renderer);  
